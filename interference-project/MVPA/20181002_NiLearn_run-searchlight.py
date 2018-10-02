@@ -22,7 +22,7 @@ def get_behavior_data(folder_name, subj, run_number, label_name):
 
 def load_fmri_image(folder_name, subj, run_number, labels):
     img = nilearn.image.load_img(folder_name + 'betasLSS.%s.r0%d.nii.gz' % (subj, run_number))
-    img = nilearn.image.index_img(img, labels[0]['order'] - 1)
+    img = nilearn.image.index_img(img, labels['order'] - 1)
 
     return img
 

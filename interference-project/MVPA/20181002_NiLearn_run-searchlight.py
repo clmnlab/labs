@@ -70,7 +70,7 @@ def perform_analysis(label, mask, runs):
 
 
 if __name__ == '__main__':
-    
+
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behavior_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
@@ -98,5 +98,7 @@ if __name__ == '__main__':
     }
 
     for subj in subj_list:
+        print('starting run %s, move label' % subj)
         perform_analysis('move', mask_img, run_number_dict['move'])
+        print('starting run %s, plan label' % subj)
         perform_analysis('plan', mask_img, run_number_dict['plan'])

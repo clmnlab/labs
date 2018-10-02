@@ -1,6 +1,7 @@
 import nilearn.decoding
 import nilearn.image
 import pandas as pd
+import sys
 
 from sklearn.model_selection import KFold
 from sklearn.naive_bayes import GaussianNB
@@ -47,7 +48,7 @@ def run_searchlight(mask, X, y, group, radius=8, estimator='gnb'):
     return nilearn.image.new_img_like(mask, searchlight.scores_)
 
 
-def perform_analysis(label, mask, runs):
+def perform_analysis(label, mask, runs, radius=8, estimator='gnb'):
 
     # load behavioral data
     labels_list = [
@@ -65,11 +66,18 @@ def perform_analysis(label, mask, runs):
     y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
     group = [3 for _ in labels_list[0]['degree']] + [4 for _ in labels_list[1]['degree']]
 
-    searchlight_img = run_searchlight(mask=mask, X=X, y=y, group=group)
-    searchlight_img.to_filename(result_dir + '%s_%s_r8_svc_3class.nii.gz' % (subj, label))
+    searchlight_img = run_searchlight(mask=mask, X=X, y=y, group=group, radius=radius, estimator=estimator)
+    searchlight_img.to_filename(result_dir + '%s_%s_r%d_%s_3class.nii.gz' % (subj, label, radius, estimator))
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        label = sys.argv[1]
+    else:
+        raise ValueError('This code need a label in {move, plan}')
+
+    if label not in {'move', 'plan'}:
+        raise ValueError('This code need a label in {move, plan}')
 
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
@@ -98,7 +106,5 @@ if __name__ == '__main__':
     }
 
     for subj in subj_list:
-        print('starting run %s, move label' % subj)
-        perform_analysis('move', mask_img, run_number_dict['move'])
-        print('starting run %s, plan label' % subj)
-        perform_analysis('plan', mask_img, run_number_dict['plan'])
+        print('starting run %s, %s label' % (subj, label))
+        perform_analysis(label, mask_img, run_number_dict[label])

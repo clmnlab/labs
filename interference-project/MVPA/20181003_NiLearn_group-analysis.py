@@ -1,6 +1,7 @@
 import numpy as np
 import nilearn.image
 import nilearn.mass_univariate
+import sys
 
 
 def load_accuracy_maps(filelist, mask):

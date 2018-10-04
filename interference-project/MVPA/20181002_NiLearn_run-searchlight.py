@@ -45,8 +45,9 @@ def run_searchlight(mask, X, y, group, radius=8, estimator='gnb'):
     )
 
     searchlight.fit(X, y, group)
+    scores = searchlight.scores_ - 1/3  # sub chance level
 
-    return nilearn.image.new_img_like(mask, searchlight.scores_)
+    return nilearn.image.new_img_like(mask, scores)
 
 
 def perform_analysis(label, mask, runs, radius=8, estimator='gnb'):

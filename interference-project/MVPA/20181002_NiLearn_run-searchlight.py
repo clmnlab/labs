@@ -74,10 +74,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         label = sys.argv[1]
     else:
-        raise ValueError('This code need a label in {move, plan}')
+        raise ValueError('This code need a label in {move, plan, color}')
 
-    if label not in {'move', 'plan'}:
-        raise ValueError('This code need a label in {move, plan}')
+    if label not in {'move', 'plan', 'color'}:
+        raise ValueError('This code need a label in {move, plan, color}')
 
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
@@ -102,7 +102,8 @@ if __name__ == '__main__':
 
     run_number_dict = {
         'move': [3, 5],
-        'plan': [3, 4]
+        'plan': [3, 4],
+        'color': [3, 4],
     }
 
     for subj in subj_list:

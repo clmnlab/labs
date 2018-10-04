@@ -47,10 +47,10 @@ def run_group_analysis(scores, mask):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2 and sys.argv[1] in {'move', 'plan'}:
+    if len(sys.argv) == 2 and sys.argv[1] in {'move', 'plan', 'color'}:
         label = sys.argv[1]
     else:
-        raise ValueError('This code need a label in {move, plan}')
+        raise ValueError('This code need a label in {move, plan, color}')
         
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'

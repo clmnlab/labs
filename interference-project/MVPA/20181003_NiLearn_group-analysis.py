@@ -9,7 +9,6 @@ def load_accuracy_maps(filelist, mask):
     
     for fname in filelist:
         score = nilearn.image.load_img(fname).get_data()
-        score_ma = np.ma.array(score, mask=mask)
         scores.append(score)
 
     scores = np.ma.array(scores, mask=[mask for i in range(len(filelist))])
@@ -35,7 +34,7 @@ def run_group_analysis(scores, mask):
                     np.ones((num_subj, 1)),  # one group
                     scores[:, j, k, l].reshape(-1, 1),  # make data (num_subject, data vector)
                     n_perm=1000,
-                    two_sided_test=False,
+                    two_sided_test=True,
                     n_jobs=8)
 
                 # save results as image
@@ -81,9 +80,8 @@ if __name__ == '__main__':
     t_img, p_img = run_group_analysis(scores, mask_array)
     
     t_img = nilearn.image.new_img_like(mask_img, t_img)
-    t_img.to_filename(stats_dir + 'group_%s_r8_gnb_3class_tstat.nii.gz' % (label))
+    t_img.to_filename(stats_dir + 'group_%s_r8_gnb_3class_tstat.nii.gz' % label)
 
     p_img = nilearn.image.new_img_like(mask_img, p_img)
-    p_img.to_filename(stats_dir + 'group_%s_r8_gnb_3class_pstat.nii.gz' % (label))
-    
-    
+    p_img.to_filename(stats_dir + 'group_%s_r8_gnb_3class_pstat.nii.gz' % label)
+

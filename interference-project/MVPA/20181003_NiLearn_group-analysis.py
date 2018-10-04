@@ -5,16 +5,15 @@ import sys
 
 
 def load_accuracy_maps(filelist, mask):
-    scores = []
+    results = []
     
     for fname in filelist:
         score = nilearn.image.load_img(fname).get_data()
-        scores.append(score)
+        results.append(score)
 
-    scores = np.ma.array(scores, mask=[mask for i in range(len(filelist))])
-    scores -= 1/3
+    results = np.ma.array(results, mask=[mask for i in range(len(filelist))])
         
-    return scores
+    return results
 
 
 def run_group_analysis(scores, mask):

@@ -72,12 +72,9 @@ def perform_analysis(label, mask, runs, radius=8, estimator='gnb'):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 2 and label in {'move', 'plan', 'color'}:
         label = sys.argv[1]
     else:
-        raise ValueError('This code need a label in {move, plan, color}')
-
-    if label not in {'move', 'plan', 'color'}:
         raise ValueError('This code need a label in {move, plan, color}')
 
     # initialize variables

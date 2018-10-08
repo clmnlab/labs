@@ -223,9 +223,9 @@ if __name__ == '__main__':
         'color': [3, 4],
     }
 
-    for label, mask in zip(roi_labels, roi_masks):
+    for name, mask in zip(roi_labels, roi_masks):
         scores = perform_analysis(label, mask, run_number_dict[label])
 
         with open(stats_dir + 'roi_accuracies.csv', 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')
-                       % (label, np.sum(mask), *scores))
+                       % (name, np.sum(mask), *scores))

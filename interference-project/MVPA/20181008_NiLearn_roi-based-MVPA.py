@@ -10,7 +10,7 @@ from sklearn.naive_bayes import GaussianNB
 def load_aal_rois(folder_name):
     roi_masks = []
 
-    for i in range(118):
+    for i in range(116):
         roi_mask_img = nilearn.image.load_img(folder_name + 'AAL_ROI_%03d.nii' % (i+1))
         roi_masks.append(roi_mask_img)
 

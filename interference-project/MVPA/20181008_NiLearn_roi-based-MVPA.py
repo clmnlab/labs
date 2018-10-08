@@ -214,7 +214,7 @@ if __name__ == '__main__':
     ]
     roi_masks = load_aal_rois(roi_dir)
 
-    with open(stats_dir + 'roi_accuracies.csv', 'w') as file:
+    with open(stats_dir + '%s_roi_accuracies.csv' % label, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))
 
     run_number_dict = {
@@ -226,6 +226,6 @@ if __name__ == '__main__':
     for name, mask in zip(roi_labels, roi_masks):
         scores = perform_analysis(label, mask, run_number_dict[label])
 
-        with open(stats_dir + 'roi_accuracies.csv', 'a') as file:
+        with open(stats_dir + '%s_roi_accuracies.csv' % label, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')
                        % (name, np.sum(mask), *scores))

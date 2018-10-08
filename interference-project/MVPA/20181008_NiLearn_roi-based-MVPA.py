@@ -11,7 +11,7 @@ def load_aal_rois(folder_name):
     roi_masks = []
 
     for i in range(118):
-        roi_mask_img = nilearn.image.load_img(folder_name + 'AAL_ROI_%03d.nii')
+        roi_mask_img = nilearn.image.load_img(folder_name + 'AAL_ROI_%03d.nii' % (i+1))
         roi_masks.append(roi_mask_img)
 
     return roi_masks
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     behavior_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
     result_dir = '/clmnlab/IN/MVPA/LSS_betas/accuracy_map/'
     stats_dir = '/clmnlab/IN/MVPA/LSS_betas/statistics/'
-    roi_dir = '/clmnlab/IN/AFNI_data/masks/AAL_ROI'
+    roi_dir = '/clmnlab/IN/AFNI_data/masks/AAL_ROI/'
 
     subj_list = [
         'IN04', 'IN05', 'IN07', 'IN09', 'IN10', 'IN11',

@@ -228,4 +228,4 @@ if __name__ == '__main__':
 
         with open(stats_dir + '%s_roi_accuracies.csv' % label, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')
-                       % (name, np.sum(mask), *scores))
+                       % (name, np.sum(mask.get_data()), *scores))

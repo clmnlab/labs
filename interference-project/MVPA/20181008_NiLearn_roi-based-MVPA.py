@@ -294,7 +294,7 @@ if __name__ == '__main__':
     if mix:
         prefix = 'mix%s_%s' % (mix, prefix)
 
-    with open(stats_dir + '%s_roi_accuracies.csv' % label, 'w') as file:
+    with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))
 
     run_number_dict = {

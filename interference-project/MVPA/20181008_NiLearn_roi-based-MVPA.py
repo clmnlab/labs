@@ -1,10 +1,12 @@
 import nilearn.image
 import numpy as np
 import pandas as pd
+import random
 import sys
 
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, LeaveOneOut
 from sklearn.naive_bayes import GaussianNB
+
 
 
 def load_aal_rois(folder_name):
@@ -43,7 +45,47 @@ def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 
 
-def perform_analysis(label, mask, runs, estimator='gnb'):
+def averaging_random_3_samples(x_grouped_samples, y_grouped_samples):
+    # data reshaping
+    datas = [dict() for _ in range(len(x_grouped_samples))]
+
+    for i, (x_samples, y_samples) in enumerate(zip(x_grouped_samples, y_grouped_samples)):
+        for x, y in zip(x_samples, y_samples):
+            if y not in datas[i]:
+                datas[i][y] = []
+            datas[i][y].append(x)
+
+    # data averaging
+    averaged_x_samples = []
+    averaged_y_samples = []
+    group = []
+
+    for i, data in enumerate(datas):
+        for y, xs in data.items():
+            idxs = list(range(len(xs)))
+            random.shuffle(idxs)
+
+            averaged_x_samples += [np.mean([xs[i], xs[j], xs[k]], axis=0)
+                                   for i, j, k in zip(idxs[0:-2:3], idxs[1:-1:3], idxs[2::3])]
+            averaged_y_samples += [y for _ in idxs[2::3]]
+            group += [i for _ in idxs[2::3]]
+
+    return averaged_x_samples, averaged_y_samples, group
+
+
+def cross_validation_with_mix(estimator, X, y, mix=False, group=None):
+    if mix is False:
+        results = cross_val_score(estimator, X, y, cv=2, verbose=1, groups=group)
+    elif mix is 'loocv':
+        cv = LeaveOneOut()
+        results = cross_val_score(estimator, X, y, cv=cv, verbose=1)
+    else:
+        results = cross_val_score(estimator, X, y, cv=mix, verbose=1)
+
+    return results
+
+
+def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False):
     results = []
 
     if estimator is 'gnb':
@@ -62,21 +104,53 @@ def perform_analysis(label, mask, runs, estimator='gnb'):
             load_fmri_image(data_dir, subj, runs[1], labels_list[1]),
         ]
 
-        X = masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
-        y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
-        group = [3 for _ in labels_list[0]['degree']] + [4 for _ in labels_list[1]['degree']]
+        if average_iter:
+            for i in range(average_iter):
+                Xs = [masking_fmri_image(img, mask) for img in img_list]
+                ys = [list(labels['task_type']) for labels in labels_list]
 
-        scores = cross_val_score(estimator, X, y, cv=2, verbose=1, groups=group)
-        results.append(np.mean(scores))
+                X, y, group = averaging_random_3_samples(Xs, ys)
+                cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
+                results.append(np.mean(cv_scores))
+        else:
+            X = masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
+            y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
+            group = [1 for _ in labels_list[0]['degree']] + [2 for _ in labels_list[1]['degree']]
+
+            cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
+            results.append(np.mean(cv_scores))
 
     return results
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2 and sys.argv[1] in {'move', 'plan', 'color'}:
+    random.seed(1008)
+
+    if len(sys.argv) >= 2 and sys.argv[1] in {'move', 'plan', 'color'}:
         label = sys.argv[1]
     else:
         raise ValueError('This code need a label in {move, plan, color}')
+
+    average = False
+    mix = False
+
+    if len(sys.argv) >= 3:
+        for argv in sys.argv[2:]:
+            try:
+                opt, value = argv.split('=')
+                if opt == 'avg':
+                    average = int(value)
+                elif opt == 'mix':
+                    if value == 'loocv':
+                        mix = 'loocv'
+                    else:
+                        mix = int(value)
+                else:
+                    raise ValueError
+            except ValueError:
+                raise ValueError('Options: use avg=average_iteration_count OR mix=cross_validation_count.\n'
+                                 + 'ex) python filename.py avg=100 mix=10\n'
+                                 + 'You can also use mix=loocv, that means Leave-One-Out-Cross-Validation.')
 
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behavior_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
@@ -224,8 +298,14 @@ if __name__ == '__main__':
     }
 
     for name, mask in zip(roi_labels, roi_masks):
-        scores = perform_analysis(label, mask, run_number_dict[label])
+        scores = perform_analysis(label, mask, run_number_dict[label], average_iter=average, mix=mix)
 
-        with open(stats_dir + '%s_roi_accuracies.csv' % label, 'a') as file:
+        prefix = label
+        if average:
+            prefix = 'avg%d_%s' % (average, prefix)
+        if mix:
+            prefix = 'mix%s_%s' % (mix, prefix)
+
+        with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')
                        % (name, np.sum(mask.get_data()), *scores))

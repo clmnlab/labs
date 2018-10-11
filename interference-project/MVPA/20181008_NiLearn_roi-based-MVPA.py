@@ -147,7 +147,8 @@ if __name__ == '__main__':
                 else:
                     raise ValueError
             except ValueError:
-                raise ValueError('Options: use avg=average_iteration_count OR mix=cross_validation_count.\n'
+                raise ValueError('If you want to use options, '
+                                 + 'write avg=average_iteration_count OR mix=cross_validation_count.\n'
                                  + 'ex) python filename.py avg=100 mix=10\n'
                                  + 'You can also use mix=loocv, that means Leave-One-Out-Cross-Validation.')
 
@@ -287,6 +288,12 @@ if __name__ == '__main__':
     ]
     roi_masks = load_aal_rois(roi_dir)
 
+    prefix = label
+    if average:
+        prefix = 'avg%d_%s' % (average, prefix)
+    if mix:
+        prefix = 'mix%s_%s' % (mix, prefix)
+
     with open(stats_dir + '%s_roi_accuracies.csv' % label, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))
 
@@ -298,12 +305,6 @@ if __name__ == '__main__':
 
     for name, mask in zip(roi_labels, roi_masks):
         scores = perform_analysis(label, mask, run_number_dict[label], average_iter=average, mix=mix)
-
-        prefix = label
-        if average:
-            prefix = 'avg%d_%s' % (average, prefix)
-        if mix:
-            prefix = 'mix%s_%s' % (mix, prefix)
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')

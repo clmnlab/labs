@@ -75,12 +75,12 @@ def averaging_random_3_samples(x_grouped_samples, y_grouped_samples):
 
 def cross_validation_with_mix(estimator, X, y, mix=False, group=None):
     if mix is False:
-        results = cross_val_score(estimator, X, y, cv=2, verbose=1, groups=group)
+        results = cross_val_score(estimator, X, y, cv=2, groups=group)
     elif mix is 'loocv':
         cv = LeaveOneOut()
-        results = cross_val_score(estimator, X, y, cv=cv, verbose=1)
+        results = cross_val_score(estimator, X, y, cv=cv)
     else:
-        results = cross_val_score(estimator, X, y, cv=mix, verbose=1)
+        results = cross_val_score(estimator, X, y, cv=mix)
 
     return results
 
@@ -119,7 +119,7 @@ def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix
     if estimator is 'gnb':
         estimator = GaussianNB()
 
-    results = Parallel(n_jobs=9)(delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix)
+    results = Parallel(n_jobs=4)(delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix)
                                  for subj in subj_list)
 
     return results

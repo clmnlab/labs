@@ -4,6 +4,7 @@ import pandas as pd
 import random
 import sys
 
+from sklearn.externals.joblib import Parallel, delayed
 from sklearn.model_selection import cross_val_score, LeaveOneOut
 from sklearn.naive_bayes import GaussianNB
 
@@ -84,40 +85,42 @@ def cross_validation_with_mix(estimator, X, y, mix=False, group=None):
     return results
 
 
-def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False):
-    results = []
+def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix):
+    # load behavioral data
+    labels_list = [
+        get_behavior_data(behavior_dir, subj, runs[0], label),
+        get_behavior_data(behavior_dir, subj, runs[1], label)
+    ]
 
+    # load fmri file
+    img_list = [
+        load_fmri_image(data_dir, subj, runs[0], labels_list[0]),
+        load_fmri_image(data_dir, subj, runs[1], labels_list[1]),
+    ]
+
+    if average_iter:
+        for i in range(average_iter):
+            Xs = [masking_fmri_image(img, mask) for img in img_list]
+            ys = [list(labels['task_type']) for labels in labels_list]
+
+            X, y, group = averaging_random_3_samples(Xs, ys)
+            cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
+            return np.mean(cv_scores)
+    else:
+        X = masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
+        y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
+        group = [1 for _ in labels_list[0]['degree']] + [2 for _ in labels_list[1]['degree']]
+
+        cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
+        return np.mean(cv_scores)
+
+
+def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False):
     if estimator is 'gnb':
         estimator = GaussianNB()
 
-    for subj in subj_list:
-        # load behavioral data
-        labels_list = [
-            get_behavior_data(behavior_dir, subj, runs[0], label),
-            get_behavior_data(behavior_dir, subj, runs[1], label)
-        ]
-
-        # load fmri file
-        img_list = [
-            load_fmri_image(data_dir, subj, runs[0], labels_list[0]),
-            load_fmri_image(data_dir, subj, runs[1], labels_list[1]),
-        ]
-
-        if average_iter:
-            for i in range(average_iter):
-                Xs = [masking_fmri_image(img, mask) for img in img_list]
-                ys = [list(labels['task_type']) for labels in labels_list]
-
-                X, y, group = averaging_random_3_samples(Xs, ys)
-                cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
-                results.append(np.mean(cv_scores))
-        else:
-            X = masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
-            y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
-            group = [1 for _ in labels_list[0]['degree']] + [2 for _ in labels_list[1]['degree']]
-
-            cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
-            results.append(np.mean(cv_scores))
+    results = Parallel(n_jobs=9)(delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix)
+                                 for subj in subj_list)
 
     return results
 

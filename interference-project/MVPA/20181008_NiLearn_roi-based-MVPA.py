@@ -8,7 +8,6 @@ from sklearn.model_selection import cross_val_score, LeaveOneOut
 from sklearn.naive_bayes import GaussianNB
 
 
-
 def load_aal_rois(folder_name):
     roi_masks = []
 

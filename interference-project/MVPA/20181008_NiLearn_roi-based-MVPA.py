@@ -76,7 +76,7 @@ def averaging_random_3_samples(x_grouped_samples, y_grouped_samples):
 def cross_validation_with_mix(estimator, X, y, mix=False, group=None):
     if mix is False:
         results = cross_val_score(estimator, X, y, cv=2, groups=group)
-    elif mix is 'loocv':
+    elif mix == 'loocv':
         cv = LeaveOneOut()
         results = cross_val_score(estimator, X, y, cv=cv)
     else:

@@ -7,6 +7,7 @@ import sys
 from sklearn.externals.joblib import Parallel, delayed
 from sklearn.model_selection import cross_val_score, LeaveOneOut
 from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import LinearSVC
 
 
 def load_aal_rois(folder_name):
@@ -118,6 +119,8 @@ def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix):
 def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False):
     if estimator is 'gnb':
         estimator = GaussianNB()
+    if estimator is 'svc':
+        estimator = LinearSVC()
 
     results = Parallel(n_jobs=4)(delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix)
                                  for subj in subj_list)

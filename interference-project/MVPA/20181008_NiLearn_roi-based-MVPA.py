@@ -135,6 +135,7 @@ if __name__ == '__main__':
 
     average = False
     mix = False
+    estimator = 'gnb'
 
     if len(sys.argv) >= 3:
         for argv in sys.argv[2:]:
@@ -147,12 +148,17 @@ if __name__ == '__main__':
                         mix = 'loocv'
                     else:
                         mix = int(value)
+                elif opt == 'estimator':
+                    if value == 'svc':
+                        estimator = 'svc'
+                    else:
+                        raise ValueError
                 else:
                     raise ValueError
             except ValueError:
                 raise ValueError('If you want to use options, '
-                                 + 'write avg=average_iteration_count OR mix=cross_validation_count.\n'
-                                 + 'ex) python filename.py avg=100 mix=10\n'
+                                 + 'write avg=average_iteration_count OR mix=cross_validation_count OR estimator=svc.\n'
+                                 + 'ex) python filename.py avg=100 mix=10 estimator=svc\n'
                                  + 'You can also use mix=loocv, that means Leave-One-Out-Cross-Validation.')
 
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
@@ -296,6 +302,8 @@ if __name__ == '__main__':
         prefix = 'avg%d_%s' % (average, prefix)
     if mix:
         prefix = 'cv%s_%s' % (mix, prefix)
+    if estimator != 'gnb':
+        prefix = '%s_%s' % (prefix, estimator)
 
     with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))
@@ -307,7 +315,8 @@ if __name__ == '__main__':
     }
 
     for name, mask in zip(roi_labels, roi_masks):
-        scores = perform_analysis(label, mask, run_number_dict[label], average_iter=average, mix=mix)
+        scores = perform_analysis(label, mask, run_number_dict[label],
+                                  average_iter=average, mix=mix, estimator=estimator)
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')

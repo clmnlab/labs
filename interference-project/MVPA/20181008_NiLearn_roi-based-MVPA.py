@@ -26,6 +26,7 @@ def get_behavior_data(folder_name, subj, run_number, label_name):
         labels = pd.read_csv(folder_name + '%s.csv' % fname, names=['run', 'degree', 'order'])
         labels = labels.set_index('order').join(
             pd.read_csv(folder_name + '%s_index.csv' % fname, names=['task_type', 'order']).set_index('order'))
+        labels['group'] = run_number * 10 + (labels['order'] - 1) // 12
 
         return labels.reset_index(drop=False)
 
@@ -74,12 +75,19 @@ def averaging_random_3_samples(x_grouped_samples, y_grouped_samples):
     return averaged_x_samples, averaged_y_samples, group
 
 
-def cross_validation_with_mix(estimator, X, y, mix=False, group=None):
+def cross_validation_with_mix(estimator, X, y, mix=False, group=None, verbose=True):
     if mix is False:
         results = cross_val_score(estimator, X, y, cv=2, groups=group)
     elif mix == 'loocv':
         cv = LeaveOneOut()
         results = cross_val_score(estimator, X, y, cv=cv)
+    elif mix == 'loo-block':
+        cv = len(set(group))
+        
+        if verbose:
+            print('run cross validation - with %d groups' % cv)
+
+        results = cross_val_score(estimator, X, y, cv=cv, groups=group)
     else:
         results = cross_val_score(estimator, X, y, cv=mix)
 
@@ -110,7 +118,11 @@ def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix):
     else:
         X = masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
         y = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
-        group = [1 for _ in labels_list[0]['degree']] + [2 for _ in labels_list[1]['degree']]
+
+        if mix == 'loo-block':
+            group = list(labels_list[0]['group']) + list(labels_list[1]['group'])
+        else:
+            group = [1 for _ in labels_list[0]['degree']] + [2 for _ in labels_list[1]['degree']]
 
         cv_scores = cross_validation_with_mix(estimator, X, y, mix, group)
         return np.mean(cv_scores)
@@ -149,6 +161,8 @@ if __name__ == '__main__':
                 elif opt == 'mix':
                     if value == 'loocv':
                         mix = 'loocv'
+                    elif value == 'loo-block':
+                        mix = 'loo-block'
                     else:
                         mix = int(value)
                 elif opt == 'estimator':

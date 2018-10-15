@@ -24,9 +24,9 @@ def get_behavior_data(folder_name, subj, run_number, label_name):
 
     def _get_labels(fname):
         labels = pd.read_csv(folder_name + '%s.csv' % fname, names=['run', 'degree', 'order'])
+        labels['group'] = run_number * 10 + (labels['order'] - 1) // 12
         labels = labels.set_index('order').join(
             pd.read_csv(folder_name + '%s_index.csv' % fname, names=['task_type', 'order']).set_index('order'))
-        labels['group'] = run_number * 10 + (labels['order'] - 1) // 12
 
         return labels.reset_index(drop=False)
 
@@ -83,7 +83,7 @@ def cross_validation_with_mix(estimator, X, y, mix=False, group=None, verbose=Tr
         results = cross_val_score(estimator, X, y, cv=cv)
     elif mix == 'loo-block':
         cv = len(set(group))
-        
+
         if verbose:
             print('run cross validation - with %d groups' % cv)
 

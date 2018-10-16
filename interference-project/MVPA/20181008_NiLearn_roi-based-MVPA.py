@@ -55,7 +55,8 @@ def load_custom_rois(file_regex_str):
 
     for fname in fnames:
         masks.append(nilearn.image.load_img(fname))
-        labels.append(fname.split('/')[-1])
+        label_name = fname.split('/')[-1].replace('nii.gz', '').replace('.nii', '')
+        labels.append(label_name)
 
     return labels, masks
 
@@ -252,6 +253,8 @@ if __name__ == '__main__':
         prefix = 'cv%s_%s' % (mix, prefix)
     if estimator != 'gnb':
         prefix = '%s_%s' % (prefix, estimator)
+    if mask_path != 'aal':
+        prefix = '%s_%s_masked' % (prefix, roi_labels[0])
 
     with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))

@@ -265,6 +265,8 @@ if __name__ == '__main__':
         prefix = '%s_%s' % (prefix, estimator)
     if mask_path != 'aal':
         prefix = '%s_%s_masked' % (prefix, roi_labels[0])
+    if class2 is True:
+        prefix = '%s_2class' % prefix
 
     with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))

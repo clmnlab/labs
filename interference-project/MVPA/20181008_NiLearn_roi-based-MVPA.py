@@ -61,7 +61,7 @@ def load_custom_rois(file_regex_str):
     return labels, masks
 
 
-def get_behavior_data(folder_name, subj, run_number, label_name, class2=False):
+def get_behavior_data(folder_name, subj, run_number, label_name, class2):
 
     def _get_labels(fname):
         labels = pd.read_csv(folder_name + '%s.csv' % fname, names=['run', 'degree', 'order'])
@@ -141,8 +141,8 @@ def cross_validation_with_mix(estimator, X, y, mix=False, group=None, verbose=Tr
 def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix, class2):
     # load behavioral data
     labels_list = [
-        get_behavior_data(behavior_dir, subj, runs[0], label),
-        get_behavior_data(behavior_dir, subj, runs[1], label)
+        get_behavior_data(behavior_dir, subj, runs[0], label, class2),
+        get_behavior_data(behavior_dir, subj, runs[1], label, class2)
     ]
 
     # load fmri file

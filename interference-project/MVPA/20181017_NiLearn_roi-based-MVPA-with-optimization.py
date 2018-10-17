@@ -96,17 +96,13 @@ def _perform_analysis(subj, label, mask, runs):
     cv_scores = []
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 19),
-                                              'class_weight': [None, 'balanced'],
-                                              'decision_function_shape': ['ovo', 'ovr']}, verbose=1, scoring='f1_micro')
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro')
     clf.fit(train_x, train_y)
     pred_y = clf.best_estimator_.predict(test_x)
     cv_scores.append(accuracy_score(test_y, pred_y))
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 19),
-                                              'class_weight': [None, 'balanced'],
-                                              'decision_function_shape': ['ovo', 'ovr']}, verbose=1, scoring='f1_micro')
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro')
     clf.fit(test_x, test_y)
     pred_y = clf.best_estimator_.predict(train_x)
     cv_scores.append(accuracy_score(train_y, pred_y))

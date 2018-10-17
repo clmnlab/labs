@@ -61,13 +61,16 @@ def load_custom_rois(file_regex_str):
     return labels, masks
 
 
-def get_behavior_data(folder_name, subj, run_number, label_name):
+def get_behavior_data(folder_name, subj, run_number, label_name, class2=False):
 
     def _get_labels(fname):
         labels = pd.read_csv(folder_name + '%s.csv' % fname, names=['run', 'degree', 'order'])
         labels['group'] = run_number * 10 + (labels['order'] - 1) // 12
         labels = labels.set_index('order').join(
             pd.read_csv(folder_name + '%s_index.csv' % fname, names=['task_type', 'order']).set_index('order'))
+
+        if class2 is True:
+            labels = labels[labels['task_type'] != 2]
 
         return labels.reset_index(drop=False)
 
@@ -135,7 +138,7 @@ def cross_validation_with_mix(estimator, X, y, mix=False, group=None, verbose=Tr
     return results
 
 
-def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix):
+def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix, class2):
     # load behavioral data
     labels_list = [
         get_behavior_data(behavior_dir, subj, runs[0], label),
@@ -169,14 +172,16 @@ def _perform_analysis(subj, label, mask, runs, estimator, average_iter, mix):
         return np.mean(cv_scores)
 
 
-def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False):
+def perform_analysis(label, mask, runs, estimator='gnb', average_iter=False, mix=False, class2=False):
     if estimator is 'gnb':
         estimator = GaussianNB()
     if estimator is 'svc':
         estimator = LinearSVC()
 
-    results = Parallel(n_jobs=4)(delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix)
-                                 for subj in subj_list)
+    results = Parallel(n_jobs=4)(
+        delayed(_perform_analysis)(subj, label, mask, runs, estimator, average_iter, mix, class2)
+        for subj in subj_list
+    )
 
     return results
 
@@ -193,6 +198,7 @@ if __name__ == '__main__':
     mix = False
     estimator = 'gnb'
     mask_path = 'aal'
+    class2 = False
 
     if len(sys.argv) >= 3:
         for argv in sys.argv[2:]:
@@ -215,6 +221,9 @@ if __name__ == '__main__':
                 elif opt == 'mask':
                     if value != 'aal':
                         mask_path = value
+                elif opt == '2class':
+                    if value == 'True':
+                        class2 = True
                 else:
                     raise ValueError
             except ValueError:
@@ -222,7 +231,8 @@ if __name__ == '__main__':
                                  + 'avg=average_iteration_count (10, 100, 1000)\n'
                                  + 'mix=cross_validation_count (2, 10, loocv, loo-block)\n'
                                  + 'estimator=svc (svc, gnb)\n'
-                                 + 'mask=mask folder paths (default aal)'
+                                 + 'mask=mask folder paths (default aal)\n'
+                                 + '2class=True (default False)\n'
                                  + 'ex) python filename.py avg=100 mix=10 estimator=svc')
 
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
@@ -267,7 +277,7 @@ if __name__ == '__main__':
 
     for name, mask in zip(roi_labels, roi_masks):
         scores = perform_analysis(label, mask, run_number_dict[label],
-                                  average_iter=average, mix=mix, estimator=estimator)
+                                  average_iter=average, mix=mix, estimator=estimator, class2=class2)
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
             file.write(('%s,'*(num_subj+1) + '%s\n')

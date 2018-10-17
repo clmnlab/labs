@@ -96,18 +96,18 @@ def _perform_analysis(subj, label, mask, runs):
     cv_scores = []
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro')
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro', cv=3)
     clf.fit(train_x, train_y)
     pred_y = clf.best_estimator_.predict(test_x)
     cv_scores.append(accuracy_score(test_y, pred_y))
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro')
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro', cv=3)
     clf.fit(test_x, test_y)
     pred_y = clf.best_estimator_.predict(train_x)
     cv_scores.append(accuracy_score(train_y, pred_y))
 
-    return np.mean(cv_scores)
+    return cv_scores
 
 
 def perform_analysis(label, mask, runs):
@@ -161,5 +161,6 @@ if __name__ == '__main__':
         scores = perform_analysis(label, mask, run_number_dict[label])
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
-            file.write(('%s,'*(num_subj+1) + '%s\n')
+            scores = np.array(scores).reshape(-1)
+            file.write(('%s,'*(num_subj*2+1) + '%s\n')
                        % (name, np.sum(mask.get_data()), *scores))

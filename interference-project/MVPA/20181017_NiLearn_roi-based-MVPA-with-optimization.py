@@ -114,7 +114,7 @@ def _perform_analysis(subj, label, mask, runs, score_method):
     pred_y = clf.best_estimator_.predict(train_x)
     cv_scores.append(accuracy_score(train_y, pred_y))
 
-    return cv_scores
+    return np.mean(cv_scores)
 
 
 def perform_analysis(label, mask, runs, score_method):
@@ -182,6 +182,5 @@ if __name__ == '__main__':
         scores = perform_analysis(label, mask, run_number_dict[label], score_method)
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
-            scores = np.array(scores).reshape(-1)
-            file.write(('%s,'*(num_subj*2+1) + '%s\n')
+            file.write(('%s,'*(num_subj+1) + '%s\n')
                        % (name, np.sum(mask.get_data()), *scores))

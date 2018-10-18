@@ -5,7 +5,7 @@ import random
 import sys
 
 from sklearn.externals.joblib import Parallel, delayed
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, cohen_kappa_score, make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 
@@ -75,7 +75,14 @@ def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 
 
-def _perform_analysis(subj, label, mask, runs):
+def _perform_analysis(subj, label, mask, runs, score_method):
+    if score_method == 'f1':
+        score_method = 'f1_micro'
+    elif score_method == 'acc':
+        score_method = 'accuracy'
+    elif score_method == 'cohen-kappa':
+        score_method = make_scorer(cohen_kappa_score)
+
     # load behavioral data
     labels_list = [
         get_behavior_data(behavior_dir, subj, runs[0], label),
@@ -96,13 +103,13 @@ def _perform_analysis(subj, label, mask, runs):
     cv_scores = []
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro', cv=3)
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring=score_method, cv=5)
     clf.fit(train_x, train_y)
     pred_y = clf.best_estimator_.predict(test_x)
     cv_scores.append(accuracy_score(test_y, pred_y))
 
     estimator = SVC(kernel='linear')
-    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring='f1_micro', cv=3)
+    clf = GridSearchCV(estimator, param_grid={'C': np.logspace(-4, 1, 16)}, scoring=score_method, cv=5)
     clf.fit(test_x, test_y)
     pred_y = clf.best_estimator_.predict(train_x)
     cv_scores.append(accuracy_score(train_y, pred_y))
@@ -110,10 +117,10 @@ def _perform_analysis(subj, label, mask, runs):
     return cv_scores
 
 
-def perform_analysis(label, mask, runs):
+def perform_analysis(label, mask, runs, score_method):
 
     results = Parallel(n_jobs=4)(
-        delayed(_perform_analysis)(subj, label, mask, runs)
+        delayed(_perform_analysis)(subj, label, mask, runs, score_method)
         for subj in subj_list
     )
 
@@ -127,6 +134,20 @@ if __name__ == '__main__':
         label = sys.argv[1]
     else:
         raise ValueError('This code need a label in {move, plan, color}')
+
+    score_method = 'f1'
+
+    if len(sys.argv) >= 3:
+        for argv in sys.argv[2:]:
+            try:
+                opt, value = argv.split('=')
+                if opt == 'score':
+                    if value in {'acc', 'f1', 'cohen-kappa'}:
+                        score_method = value
+                    else:
+                        raise ValueError('Wrong Score Method! use acc, f1, or cohen-kappa')
+            except ValueError as e:
+                raise e
 
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behavior_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
@@ -146,7 +167,7 @@ if __name__ == '__main__':
 
     roi_labels, roi_masks = load_aal_rois(roi_dir)
 
-    prefix = '%s_svc_opt' % label
+    prefix = '%s_svc_opt_%s' % (label, score_method)
 
     with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'w') as file:
         file.write(('%s,'*(num_subj+1) + '%s\n') % ('aal_label', 'mask_size', *subj_list))
@@ -158,7 +179,7 @@ if __name__ == '__main__':
     }
 
     for name, mask in zip(roi_labels, roi_masks):
-        scores = perform_analysis(label, mask, run_number_dict[label])
+        scores = perform_analysis(label, mask, run_number_dict[label], score_method)
 
         with open(stats_dir + '%s_roi_accuracies.csv' % prefix, 'a') as file:
             scores = np.array(scores).reshape(-1)

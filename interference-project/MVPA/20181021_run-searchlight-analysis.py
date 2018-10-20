@@ -13,7 +13,6 @@ if __name__ == '__main__':
     else:
         raise ValueError('This code need a label in {move, plan, color}')
 
-    runs = run_number_dict[label]
     estimator = 'gnb'
     radius = 8
 
@@ -56,6 +55,8 @@ if __name__ == '__main__':
         'plan': [3, 4],
         'color': [3, 4],
     }
+    
+    runs = run_number_dict[label]
 
     # load mask file
     mask_path = data_dir + 'full_mask.group33.nii.gz'

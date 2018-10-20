@@ -1,7 +1,8 @@
 import nilearn.image
 import random
+import sys
 
-from .mvpa import get_behavior_data, load_fmri_image, run_searchlight
+from mvpa import get_behavior_data, load_fmri_image, run_searchlight
 
 
 if __name__ == '__main__':

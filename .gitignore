@@ -3,3 +3,6 @@
 
 # Pycharm files
 .idea
+
+# jupyter files
+__pycache__

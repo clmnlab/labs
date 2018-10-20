@@ -8,7 +8,7 @@ from mvpa import get_behavior_data, load_fmri_image, run_searchlight
 if __name__ == '__main__':
     random.seed(1021)
     
-    if len(sys.argv) == 2 and sys.argv[1] in {'move', 'plan', 'color'}:
+    if len(sys.argv) >= 2 and sys.argv[1] in {'move', 'plan', 'color'}:
         label = sys.argv[1]
     else:
         raise ValueError('This code need a label in {move, plan, color}')

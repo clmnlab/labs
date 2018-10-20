@@ -13,6 +13,27 @@ if __name__ == '__main__':
     else:
         raise ValueError('This code need a label in {move, plan, color}')
 
+    runs = run_number_dict[label]
+    estimator = 'gnb'
+    radius = 8
+
+    if len(sys.argv) >= 3:
+        for argv in sys.argv[2:]:
+            try:
+                opt, value = argv.split('=')
+                if opt == 'estimator':
+                    if value == 'svc':
+                        estimator = 'svc'
+                    elif value == 'gnb':
+                        estimator = 'gnb'
+                    else:
+                        raise ValueError
+                else:
+                    raise ValueError
+            except ValueError:
+                raise ValueError('Use these options:\n'
+                                 + 'estimator=estimator name (gnb or svc)')
+        
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behav_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
@@ -35,10 +56,6 @@ if __name__ == '__main__':
         'plan': [3, 4],
         'color': [3, 4],
     }
-    
-    runs = run_number_dict[label]
-    estimator = 'gnb'
-    radius = 8
 
     # load mask file
     mask_path = data_dir + 'full_mask.group33.nii.gz'

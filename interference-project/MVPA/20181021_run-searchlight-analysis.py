@@ -1,7 +1,7 @@
 import nilearn.image
 import random
 
-from mvpa import get_behavior_data, load_fmri_image, run_searchlight
+from .mvpa import get_behavior_data, load_fmri_image, run_searchlight
 
 
 if __name__ == '__main__':
@@ -43,14 +43,12 @@ if __name__ == '__main__':
     mask_path = data_dir + 'full_mask.group33.nii.gz'
     mask_img = nilearn.image.load_img(mask_path)
 
-
-
     for subj in subj_list:
         print('starting run %s, %s label' % (subj, label))
         
         for run in runs:
             # load behavioral data
-            labels = get_behavior_data(behav_dir, subj, run, labels, stratified_group=True)
+            labels = get_behavior_data(behav_dir, subj, run, label, stratified_group=True)
 
             # load fmri file
             img = load_fmri_image(data_dir, subj, run, labels)
@@ -60,4 +58,4 @@ if __name__ == '__main__':
             group = list(labels['group'])
             
             searchlight_img = run_searchlight(mask_img, X, y, group, estimator)
-            searchlight_img.to_filename(result_dir + '%s_run%d_%s_r%d_%s.nii.gz' % (subj, run, label, radius, estimator)
+            searchlight_img.to_filename(result_dir + '%s_run%d_%s_r%d_%s.nii.gz' % (subj, run, label, radius, estimator))

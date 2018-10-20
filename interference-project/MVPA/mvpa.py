@@ -1,3 +1,4 @@
+import glob
 import nilearn.image
 import pandas as pd
 import random
@@ -70,12 +71,12 @@ def run_searchlight(full_mask, X, y, group, estimator='svc'):
         full_mask,
         radius=8,
         estimator=estimator,
-        njobs=4,
+        n_jobs=4,
         verbose=False,
         cv=cv
     )
     
     searchlight.fit(X, y, group)
-    scores = searchlgith.scores_
+    scores = searchlight.scores_
     
     return nilearn.image.new_img_like(full_mask, scores)

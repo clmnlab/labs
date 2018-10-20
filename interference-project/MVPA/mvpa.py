@@ -1,4 +1,5 @@
 import glob
+import nilearn.decoding
 import nilearn.image
 import pandas as pd
 import random

@@ -4,7 +4,7 @@ import nilearn.image
 import pandas as pd
 import random
 
-from sklearn.model_selection import KFold
+from sklearn.model_selection import GroupKFold
 from sklearn.naive_bayes import GaussianNB
 
 
@@ -73,7 +73,7 @@ def run_searchlight(full_mask, X, y, group, estimator='svc'):
     if estimator is 'gnb':
         estimator = GaussianNB()
         
-    cv = KFold(n_splits=2)
+    cv = GroupKFold(n_splits=2)
         
     searchlight = nilearn.decoding.SearchLight(
         full_mask,

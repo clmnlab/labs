@@ -62,6 +62,13 @@ def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 
 
+def get_full_mask(data_dir):
+    mask_path = data_dir + 'full_mask.group33.nii.gz'
+    mask_img = nilearn.image.load_img(mask_path)
+
+    return mask_img
+
+
 def run_searchlight(full_mask, X, y, group, estimator='svc'):
     if estimator is 'gnb':
         estimator = GaussianNB()

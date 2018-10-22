@@ -1,8 +1,7 @@
-import nilearn.image
 import random
 import sys
 
-from ..mvpa_toolkits import get_behavior_data, load_fmri_image, run_searchlight
+from ..mvpa_toolkits import get_behavior_data, load_fmri_image, run_searchlight, get_full_mask
 
 
 if __name__ == '__main__':
@@ -59,8 +58,7 @@ if __name__ == '__main__':
     runs = run_number_dict[label]
 
     # load mask file
-    mask_path = data_dir + 'full_mask.group33.nii.gz'
-    mask_img = nilearn.image.load_img(mask_path)
+    mask_img = get_full_mask(data_dir)
 
     for subj in subj_list:
         print('starting run %s, %s label' % (subj, label))

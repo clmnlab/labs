@@ -1,9 +1,7 @@
 import random
 import sys
 
-sys.path.append("/home/clmnlab/labs/clmnlab_libs")
-
-from mvpa_toolkits import get_behavior_data, load_fmri_image, run_searchlight, get_full_mask
+from clmnlab_libs.mvpa_toolkits import get_behavior_data, load_fmri_image, run_searchlight, get_full_mask
 
 
 if __name__ == '__main__':

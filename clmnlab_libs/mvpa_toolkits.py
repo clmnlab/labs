@@ -4,7 +4,7 @@ import nilearn.image
 import pandas as pd
 import random
 
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import GroupKFold, cross_val_score, LeaveOneOut
 from sklearn.naive_bayes import GaussianNB
 
 
@@ -88,3 +88,18 @@ def run_searchlight(full_mask, X, y, group, estimator='svc', chance_level=0):
     scores = searchlight.scores_ - chance_level
     
     return nilearn.image.new_img_like(full_mask, scores)
+
+
+def decoding_with_time_series(estimator, X, y):
+    cv = LeaveOneOut()
+    return cross_val_score(estimator, X, y, cv=cv)
+
+
+def run_decoding_time_series(estimator, img, y, roi_masks):
+    results = []
+
+    for mask in zip(roi_masks):
+        X = masking_fmri_image(img, mask)
+        results.append(decoding_with_time_series(estimator, X, y))
+
+    return results

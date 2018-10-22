@@ -74,5 +74,5 @@ if __name__ == '__main__':
             y = list(labels['task_type'])
             group = list(labels['group'])
             
-            searchlight_img = run_searchlight(mask_img, X, y, group, estimator)
+            searchlight_img = run_searchlight(mask_img, X, y, group, estimator, chance_level=1/3)
             searchlight_img.to_filename(result_dir + '%s_run%d_%s_r%d_%s.nii.gz' % (subj, run, label, radius, estimator))

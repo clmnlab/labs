@@ -69,7 +69,7 @@ def get_full_mask(data_dir):
     return mask_img
 
 
-def run_searchlight(full_mask, X, y, group, estimator='svc'):
+def run_searchlight(full_mask, X, y, group, estimator='svc', chance_level=0):
     if estimator is 'gnb':
         estimator = GaussianNB()
         
@@ -85,6 +85,6 @@ def run_searchlight(full_mask, X, y, group, estimator='svc'):
     )
     
     searchlight.fit(X, y, group)
-    scores = searchlight.scores_
+    scores = searchlight.scores_ - chance_level
     
     return nilearn.image.new_img_like(full_mask, scores)

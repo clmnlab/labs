@@ -87,7 +87,7 @@ if __name__ == '__main__':
     with open(stats_dir + 'decoding_accuracy_%s.csv' % estimator, 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))
 
-        for subj, order, res in zip(subj_list, results):
+        for subj, (order, res) in zip(subj_list, results):
             response = [-1] * 144
             for roi_name, roi_corrects in zip(roi_labels, res):
                 for idx, correct in zip(order, roi_corrects):

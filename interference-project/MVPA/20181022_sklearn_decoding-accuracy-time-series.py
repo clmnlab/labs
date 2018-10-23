@@ -9,7 +9,7 @@ from sklearn.svm import LinearSVC
 from clmnlab_libs.mvpa_toolkits import get_behavior_data, load_rois, load_fmri_image, run_decoding_time_series
 
 
-def _perform_analysis(subj, estimator):
+def _perform_analysis(subj, estimator, run):
     if estimator == 'gnb':
         estimator = GaussianNB()
     elif estimator == 'svc':
@@ -57,6 +57,9 @@ if __name__ == '__main__':
                                  + 'run=run number (1 or 2)'
                                  + 'estimator=estimator name (gnb or svc)')
 
+    if run == 0:
+        raise ValueError('This code need a run number (1 or 2). use run=run number.')
+
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behav_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
@@ -78,7 +81,7 @@ if __name__ == '__main__':
     roi_labels, roi_masks = load_rois(file_regex_str=roi_dir + 'searchlight_results/*.nii')
 
     results = Parallel(n_jobs=4)(
-        delayed(_perform_analysis)(subj, estimator) for subj in subj_list
+        delayed(_perform_analysis)(subj, estimator, run) for subj in subj_list
     )
 
     with open(stats_dir + 'decoding_accuracy_%s.csv' % estimator, 'w') as file:

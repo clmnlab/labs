@@ -84,7 +84,7 @@ if __name__ == '__main__':
         delayed(_perform_analysis)(subj, estimator, run) for subj in subj_list
     )
 
-    with open(stats_dir + 'decoding_accuracy_%s.csv' % estimator, 'w') as file:
+    with open(stats_dir + 'decoding_accuracy_%s_run%d.csv' % (estimator, run), 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))
 
         for subj, (order, res) in zip(subj_list, results):

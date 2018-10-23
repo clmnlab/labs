@@ -25,7 +25,7 @@ def _perform_analysis(subj, estimator, run):
     img = load_fmri_image(data_dir, subj, run, labels)
     y = labels['task_type']
 
-    return list(zip(labels['order'], run_decoding_time_series(estimator, img, y, roi_masks)))
+    return labels['order'], run_decoding_time_series(estimator, img, y, roi_masks)
 
 
 if __name__ == '__main__':
@@ -87,10 +87,10 @@ if __name__ == '__main__':
     with open(stats_dir + 'decoding_accuracy_%s.csv' % estimator, 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))
 
-        for subj, res in zip(subj_list, results):
+        for subj, order, res in zip(subj_list, results):
             response = [-1] * 144
             for roi_name, roi_corrects in zip(roi_labels, res):
-                for order, correct in roi_corrects:
-                    response[order-1] = correct
+                for idx, correct in zip(order, roi_corrects):
+                    response[idx-1] = correct
 
                 file.write(('%s,%s,' + ('%d,' * 143) + '%d\n') % (subj, roi_name, *response))

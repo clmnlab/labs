@@ -98,8 +98,8 @@ def decoding_with_time_series(estimator, X, y):
 def run_decoding_time_series(estimator, img, y, roi_masks):
     results = []
 
-    for mask in zip(roi_masks):
+    for mask in roi_masks:
         X = masking_fmri_image(img, mask)
-        results.append(decoding_with_time_series(estimator, X, y))
+        results.append(tuple(decoding_with_time_series(estimator, X, y)))
 
     return results

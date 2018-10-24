@@ -1,6 +1,5 @@
 import sys
 
-from sklearn.externals.joblib import Parallel, delayed
 from sklearn.naive_bayes import GaussianNB
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -80,9 +79,7 @@ if __name__ == '__main__':
 
     roi_labels, roi_masks = load_rois(file_regex_str=roi_dir + 'searchlight_results/*.nii')
 
-    results = Parallel(n_jobs=4)(
-        delayed(_perform_analysis)(subj, estimator, run) for subj in subj_list
-    )
+    results = [_perform_analysis(subj, estimator, run) for subj in subj_list]
 
     with open(stats_dir + 'decoding_accuracy_%s_%s_run%d.csv' % (label, estimator, run), 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))

@@ -23,7 +23,7 @@ def load_rois(file_regex_str):
     return labels, masks
 
 
-def get_behavior_data(folder_name, subj, run_number, label, stratified_group=False):
+def get_behavior_data(folder_name, subj, run_number, label, stratified_group=False, contain_groups=None):
     
     def _stratified_group(labels):
         result = []
@@ -37,6 +37,9 @@ def get_behavior_data(folder_name, subj, run_number, label, stratified_group=Fal
             result.extend([2] * (l-split_idx))
             
         return result
+
+    if type(contain_groups) == int:
+        contain_groups = (contain_groups,)
     
     behav_df = pd.read_csv(folder_name + '%s_behav.csv' % subj, index_col=0)
     behav_df = behav_df[behav_df['run'] == run_number]
@@ -46,6 +49,8 @@ def get_behavior_data(folder_name, subj, run_number, label, stratified_group=Fal
     
     if stratified_group is True:
         labels['group'] = _stratified_group(labels)
+    if contain_groups is not None:
+        labels = labels[labels['group'].isin(contain_groups)]
     
     return labels
 

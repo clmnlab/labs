@@ -1,4 +1,5 @@
 import sys
+import time
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.pipeline import Pipeline
@@ -79,7 +80,11 @@ if __name__ == '__main__':
 
     roi_labels, roi_masks = load_rois(file_regex_str=roi_dir + 'searchlight_results/*.nii')
 
-    results = [_perform_analysis(subj, estimator, run) for subj in subj_list]
+    results = []
+    for subj in subj_list:
+        results.append(_perform_analysis(subj, estimator, run) for subj in subj_list)
+        print(subj, 'finished...')
+        time.sleep(60)
 
     with open(stats_dir + 'decoding_accuracy_%s_%s_run%d.csv' % (label, estimator, run), 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))

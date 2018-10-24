@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
     results = []
     for subj in subj_list:
-        results.append(_perform_analysis(subj, estimator, run) for subj in subj_list)
+        results.append(_perform_analysis(subj, estimator, run))
         print(subj, 'finished...')
         time.sleep(60)
 

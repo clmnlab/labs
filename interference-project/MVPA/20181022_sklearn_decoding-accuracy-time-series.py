@@ -84,7 +84,7 @@ if __name__ == '__main__':
     for subj in subj_list:
         results.append(_perform_analysis(subj, estimator, run))
         print(subj, 'finished...')
-        time.sleep(60)
+        #time.sleep(60)
 
     with open(stats_dir + 'decoding_accuracy_%s_%s_run%d.csv' % (label, estimator, run), 'w') as file:
         file.write(('subj,roi_name,' + ('trial_%d,' * 143) + 'trial_%d\n') % (*list(range(1, 145)),))

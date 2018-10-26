@@ -29,10 +29,10 @@ def _perform_analysis(subj, estimator, run, label):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) >= 2 and sys.argv[1] in {'move', 'color'}:
+    if len(sys.argv) >= 2 and sys.argv[1] in {'move', 'plan', 'color'}:
         label = sys.argv[1]
     else:
-        raise ValueError('This code need a label in {move, color}')
+        raise ValueError('This code need a label in {move, plan, color}')
 
     estimator = 'gnb'
     run = 0

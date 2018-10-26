@@ -9,7 +9,7 @@ from sklearn.svm import LinearSVC
 from clmnlab_libs.mvpa_toolkits import get_behavior_data, load_rois, load_fmri_image, run_decoding_time_series
 
 
-def _perform_analysis(subj, estimator, run):
+def _perform_analysis(subj, estimator, run, label):
     if estimator == 'gnb':
         estimator = GaussianNB()
     elif estimator == 'svc':
@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
     results = []
     for subj in subj_list:
-        results.append(_perform_analysis(subj, estimator, run))
+        results.append(_perform_analysis(subj, estimator, run, label))
         print(subj, 'finished...')
         time.sleep(20)
 

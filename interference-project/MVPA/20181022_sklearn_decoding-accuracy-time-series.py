@@ -19,7 +19,7 @@ def _perform_analysis(subj, estimator, run, label):
         ])
 
     # load behavioral data
-    labels = get_behavior_data(behav_dir, subj, run, label)
+    labels = get_behavior_data(behav_dir, subj, run, label, contain_groups=(1,))
 
     # load fmri data
     img = load_fmri_image(data_dir, subj, run, labels)

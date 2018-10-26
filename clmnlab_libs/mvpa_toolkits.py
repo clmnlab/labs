@@ -1,10 +1,11 @@
 import glob
 import nilearn.decoding
 import nilearn.image
+import numpy as np
 import pandas as pd
 import random
 
-from sklearn.model_selection import GroupKFold, cross_val_score, LeaveOneOut
+from sklearn.model_selection import GroupKFold, cross_val_score, LeaveOneOut, ShuffleSplit
 from sklearn.naive_bayes import GaussianNB
 
 
@@ -106,5 +107,22 @@ def run_decoding_time_series(estimator, img, y, roi_masks):
     for mask in roi_masks:
         X = masking_fmri_image(img, mask)
         results.append(tuple(decoding_with_time_series(estimator, X, y)))
+
+    return results
+
+
+def run_roi_based_mvpa(estimator, img, y, roi_masks, cv_method, cv_splits=2, n_iter=1):
+    results = []
+
+    if cv_method == 'random':
+        cv = ShuffleSplit(n_splits=cv_splits)
+    else:
+        raise ValueError('This cv method (%s) is not supported' % cv_method)
+
+    for mask in roi_masks:
+        X = masking_fmri_image(img, mask)
+
+        for _ in range(n_iter):
+            results.append(np.mean(cross_val_score(estimator, X, y, cv=cv)))
 
     return results

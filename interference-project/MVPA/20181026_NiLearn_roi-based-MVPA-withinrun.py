@@ -90,5 +90,5 @@ if __name__ == '__main__':
         file.write(('subj,' + ('%s,' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
 
         for subj, res in zip(subj_list, results):
-            file.write(('%s,' + ('%f,' * (len(roi_labels)-1)) + '%f\n') % (subj, *results[0]))
+            file.write(('%s,' + ('%f,' * (len(roi_labels)-1)) + '%f\n') % (subj, *res))
 

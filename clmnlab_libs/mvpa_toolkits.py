@@ -143,7 +143,7 @@ def run_roi_based_mvpa(estimator, img, y, roi_masks, cv_method, cv_splits=2, n_i
 
     if cv_method == 'random':
         cv = ShuffleSplit(n_splits=cv_splits)
-    if cv_method == 'balanced':
+    elif cv_method == 'balanced':
         cv = BalancedShuffleSplit(n_splits=cv_splits)
     else:
         raise ValueError('This cv method (%s) is not supported' % cv_method)

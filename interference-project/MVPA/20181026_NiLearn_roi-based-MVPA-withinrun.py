@@ -25,7 +25,7 @@ def _perform_analysis(subj, estimator, run, label, niter):
     img = load_fmri_image(data_dir, subj, run, labels)
     y = labels['task_type']
 
-    return run_roi_based_mvpa(estimator, img, y, roi_masks, 'random', n_iter=niter)
+    return run_roi_based_mvpa(estimator, img, y, roi_masks, 'balanced', n_iter=niter)
 
 
 if __name__ == '__main__':

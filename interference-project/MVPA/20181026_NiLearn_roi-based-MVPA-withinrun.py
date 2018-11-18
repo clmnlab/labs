@@ -9,7 +9,7 @@ from sklearn.svm import LinearSVC
 from clmnlab_libs.mvpa_toolkits import get_behavior_data, load_rois, load_fmri_image, run_roi_based_mvpa
 
 
-def _perform_analysis(subj, estimator, run, label):
+def _perform_analysis(subj, estimator, run, label, niter):
     if estimator == 'gnb':
         estimator = GaussianNB()
     elif estimator == 'svc':
@@ -25,7 +25,7 @@ def _perform_analysis(subj, estimator, run, label):
     img = load_fmri_image(data_dir, subj, run, labels)
     y = labels['task_type']
 
-    return run_roi_based_mvpa(estimator, img, y, roi_masks, 'random', n_iter=1)
+    return run_roi_based_mvpa(estimator, img, y, roi_masks, 'random', n_iter=niter)
 
 
 if __name__ == '__main__':
@@ -36,6 +36,7 @@ if __name__ == '__main__':
 
     estimator = 'gnb'
     run = 0
+    niter = 1
 
     if len(sys.argv) >= 3:
         for argv in sys.argv[2:]:
@@ -50,6 +51,8 @@ if __name__ == '__main__':
                         estimator = 'gnb'
                     else:
                         raise ValueError
+                elif opt == 'iter':
+                    niter = int(value)
                 else:
                     raise ValueError
             except ValueError:
@@ -82,13 +85,13 @@ if __name__ == '__main__':
 
     results = []
     for subj in subj_list:
-        results.append(_perform_analysis(subj, estimator, run, label))
+        results.append(_perform_analysis(subj, estimator, run, label, niter))
         print(subj, 'finished...')
-        time.sleep(20)
+        #time.sleep(20)
 
-    with open(stats_dir + 'roi_accuracies_%s_%s_run%d.csv' % (label, estimator, run), 'w') as file:
-        file.write(('subj,' + ('%s,' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
+    with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d.tsv' % (label, estimator, run, niter), 'w') as file:
+        file.write(('subj\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
 
         for subj, res in zip(subj_list, results):
-            file.write(('%s,' + ('%f,' * (len(roi_labels)-1)) + '%f\n') % (subj, *res))
+            file.write(('%s\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (subj, *res))
 

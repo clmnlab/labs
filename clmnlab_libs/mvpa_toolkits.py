@@ -83,10 +83,12 @@ def get_behavior_data(folder_name, subj, run_number, label, stratified_group=Fal
     return labels
 
 
-def load_fmri_image(folder_name, subj, run_number, labels):
+def load_fmri_image(folder_name, subj, run_number, labels, standardize=True):
     img = nilearn.image.load_img(folder_name + 'betasLSS.%s.r0%d.nii.gz' % (subj, run_number))
     img = nilearn.image.index_img(img, labels['order'] - 1)
-    img = nilearn.image.clean_img(img)
+
+    if standardize:
+        img = nilearn.image.clean_img(img)
 
     return img
 

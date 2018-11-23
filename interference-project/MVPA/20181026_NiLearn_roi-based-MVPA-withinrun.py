@@ -9,7 +9,7 @@ from sklearn.svm import LinearSVC
 from clmnlab_libs.mvpa_toolkits import get_behavior_data, load_rois, load_fmri_image, run_roi_based_mvpa
 
 
-def _perform_analysis(subj, estimator, run, label, niter):
+def _perform_analysis(subj, estimator, run, label, niter, standardize=True):
     if estimator == 'gnb':
         estimator = GaussianNB()
     elif estimator == 'svc':
@@ -22,7 +22,7 @@ def _perform_analysis(subj, estimator, run, label, niter):
     labels = get_behavior_data(behav_dir, subj, run, label)
 
     # load fmri data
-    img = load_fmri_image(data_dir, subj, run, labels)
+    img = load_fmri_image(data_dir, subj, run, labels, standardize=standardize)
     y = labels['task_type']
 
     return run_roi_based_mvpa(estimator, img, y, roi_masks, 'balanced', n_iter=niter)
@@ -37,6 +37,7 @@ if __name__ == '__main__':
     estimator = 'gnb'
     run = 0
     niter = 1
+    standardize = True
 
     if len(sys.argv) >= 3:
         for argv in sys.argv[2:]:
@@ -53,12 +54,16 @@ if __name__ == '__main__':
                         raise ValueError
                 elif opt == 'iter':
                     niter = int(value)
+                elif opt == 'standardize':
+                    standardize = bool(int(value))
                 else:
                     raise ValueError
             except ValueError:
                 raise ValueError('Use these options:\n'
                                  + 'run=run number (3, 4 or 5)'
-                                 + 'estimator=estimator name (gnb or svc)')
+                                 + 'estimator=estimator name (gnb or svc)'
+                                 + 'iteration=iteration number (integer)'
+                                 + 'standardize=0 or 1 (0=False, 1=True)')
 
     if run == 0:
         raise ValueError('This code need a run number (1 or 2). use run=run number.')
@@ -83,15 +88,14 @@ if __name__ == '__main__':
 
     roi_labels, roi_masks = load_rois(file_regex_str=roi_dir + 'run12_glm/*.nii')
 
+    with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d_standardize%s.tsv' % (label, estimator, run, niter, standardize), 'w') as file:
+        file.write(('subj\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
+
     results = []
     for subj in subj_list:
         results.append(_perform_analysis(subj, estimator, run, label, niter))
         print(subj, 'finished...')
-        #time.sleep(20)
 
-    with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d.tsv' % (label, estimator, run, niter), 'w') as file:
-        file.write(('subj\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
-
-        for subj, res in zip(subj_list, results):
-            file.write(('%s\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (subj, *res))
+        with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d.tsv' % (label, estimator, run, niter), 'a') as file:
+            file.write(('%s\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (subj, *results[-1]))
 

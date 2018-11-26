@@ -74,6 +74,7 @@ if __name__ == '__main__':
     result_dir = '/clmnlab/IN/MVPA/LSS_betas/accuracy_map/'
     stats_dir = '/clmnlab/IN/MVPA/LSS_betas/statistics/'
     roi_dir = '/clmnlab/IN/MVPA/LSS_betas/rois/'
+    output_filename = 'roi_accuracies_%s_%s_run%d_iter%d_standardize%s.tsv' % (label, estimator, run, niter, standardize)
 
     subj_list = [
         'IN04', 'IN05', 'IN07', 'IN09', 'IN10', 'IN11',
@@ -88,7 +89,7 @@ if __name__ == '__main__':
 
     roi_labels, roi_masks = load_rois(file_regex_str=roi_dir + 'run12_glm/*.nii')
 
-    with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d_standardize%s.tsv' % (label, estimator, run, niter, standardize), 'w') as file:
+    with open(stats_dir + output_filename, 'w') as file:
         file.write(('subj\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (*roi_labels,))
 
     results = []
@@ -96,6 +97,6 @@ if __name__ == '__main__':
         results.append(_perform_analysis(subj, estimator, run, label, niter))
         print(subj, 'finished...')
 
-        with open(stats_dir + 'roi_accuracies_%s_%s_run%d_iter%d.tsv' % (label, estimator, run, niter), 'a') as file:
+        with open(stats_dir + output_filename, 'a') as file:
             file.write(('%s\t' + ('%s\t' * (len(roi_labels)-1)) + '%s\n') % (subj, *results[-1]))
 

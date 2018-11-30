@@ -24,7 +24,7 @@ if __name__ == '__main__':
     num_subj = len(subj_list)
     runs = (1, 2, 3)
 
-    mask_img = get_full_mask('/clmnlab/GA/MVPA/LSS_betas_pb02/fullmask_GAGB/', 'full_mask.GAGB01to19.nii.gz')
+    mask_img = get_full_mask('/clmnlab/GA/MVPA/fullmask_GAGB/', 'full_mask.GAGB01to19.nii.gz')
 
     for subj in subj_list:
         print('starting run %s' % subj)

@@ -97,22 +97,22 @@ def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 
 
-def get_full_mask(data_dir):
-    mask_path = data_dir + 'full_mask.group33.nii.gz'
+def get_full_mask(data_dir, fname='full_mask.group33.nii.gz'):
+    mask_path = data_dir + fname
     mask_img = nilearn.image.load_img(mask_path)
 
     return mask_img
 
 
-def run_searchlight(full_mask, X, y, group, estimator='svc', chance_level=0):
+def run_searchlight(full_mask, X, y, group, group_k=2, radius=8, estimator='svc', chance_level=0):
     if estimator is 'gnb':
         estimator = GaussianNB()
         
-    cv = GroupKFold(n_splits=2)
+    cv = GroupKFold(n_splits=group_k)
         
     searchlight = nilearn.decoding.SearchLight(
         full_mask,
-        radius=8,
+        radius=radius,
         estimator=estimator,
         n_jobs=4,
         verbose=False,

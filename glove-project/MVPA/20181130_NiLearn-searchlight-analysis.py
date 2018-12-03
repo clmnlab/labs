@@ -1,6 +1,8 @@
 import nilearn.image
 import random
+import sys
 
+from collections import Counter
 from clmnlab_libs.mvpa_toolkits import run_searchlight, get_full_mask, standardize_session_wise
 
 
@@ -9,6 +11,19 @@ if __name__ == '__main__':
 
     estimator = 'gnb'
     radius = 8
+    label = 'path'
+
+    if len(sys.argv) >= 2:
+        for argv in sys.argv[1:]:
+            try:
+                opt, value = argv.split('=')
+                if opt == 'label' and value in {'pos', 'path'}:
+                    label = value
+                else:
+                    raise ValueError
+            except ValueError:
+                raise ValueError('Use these options:\n'
+                                 + '  label=label name (pos or path)')
 
     # initialize variables
     data_dir = '/clmnlab/GA/MVPA/LSS_pb02/data/'
@@ -29,7 +44,28 @@ if __name__ == '__main__':
     for subj in subj_list:
         print('starting run %s' % subj)
 
-        labels = list(range(1, 13)) * 8
+        if label == 'path':
+            # all 12 paths repeated
+            labels = list(range(1, 13)) * 8
+
+            # set chance level
+            chance_level = 1/12
+
+        elif label == 'pos':
+            # read behav file - all the same within subjects
+            with open(behav_dir + 'targetID.txt', 'r') as file:
+                labels = file.readlines()
+
+            # use only 2 ~ 97 lines - first line is dummy, all sessions has same order
+            labels = [int(l.strip()) for l in labels[1:97]]
+
+            # set chance level
+            chance_level = 1/4
+
+            # assertion error if all classes is not the same
+            assert set(Counter(labels).values()) == {24}
+        else:
+            raise ValueError('!! wrong label name')
 
         img_list = [
             nilearn.image.load_img(data_dir + 'betasLSS.%s.r01.nii.gz' % subj),
@@ -51,5 +87,5 @@ if __name__ == '__main__':
         group = [1] * 96 + [2] * 96 + [3] * 96
 
         searchlight_img = run_searchlight(mask_img, X, y, group,
-                                          group_k=3, radius=radius, estimator=estimator, chance_level=1/12)
+                                          group_k=3, radius=radius, estimator=estimator, chance_level=chance_level)
         searchlight_img.to_filename(result_dir + '%s_r%d.nii.gz' % (subj, radius))

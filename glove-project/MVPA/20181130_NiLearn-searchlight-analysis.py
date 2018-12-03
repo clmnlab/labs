@@ -36,16 +36,20 @@ if __name__ == '__main__':
             nilearn.image.load_img(data_dir + 'betasLSS.%s.r02.nii.gz' % subj),
             nilearn.image.load_img(data_dir + 'betasLSS.%s.r03.nii.gz' % subj),
         ]
+        try:
+            img_list = [
+                nilearn.image.index_img(img, list(range(1, 97)))
+                for img in img_list
+            ]
+        except IndexError as e:
+            print('! index error occurs in %s, skip this subject' % subj)
+            print(str(e))
+            continue
 
-        img_list = [
-            nilearn.image.index_img(img, list(range(1, 97)))
-            for img in img_list
-        ]
-
-        X = nilearn.image.concoat_imgs(img_list)
-        y = labels * 8
+        X = nilearn.image.concat_imgs(img_list)
+        y = labels * 3
         group = [1] * 96 + [2] * 96 + [3] * 96
 
         searchlight_img = run_searchlight(mask_img, X, y, group,
-                                          group_k=3, radius=radius, estimator='gnb', chance_level=1/12)
+                                          group_k=3, radius=radius, estimator=estimator, chance_level=1/12)
         searchlight_img.to_filename(result_dir + '%s_r%d.nii.gz' % (subj, radius))

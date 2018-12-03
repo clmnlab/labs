@@ -1,7 +1,7 @@
 import nilearn.image
 import random
 
-from clmnlab_libs.mvpa_toolkits import run_searchlight, get_full_mask
+from clmnlab_libs.mvpa_toolkits import run_searchlight, get_full_mask, standardize_session_wise
 
 
 if __name__ == '__main__':
@@ -11,10 +11,10 @@ if __name__ == '__main__':
     radius = 8
 
     # initialize variables
-    data_dir = '/clmnlab/GA/MVPA/LSS_betas_pb02/data/'
-    behav_dir = '/clmnlab/GA/MVPA/LSS_betas_pb02/behaviors/'
-    result_dir = '/clmnlab/GA/MVPA/LSS_betas_pb02/accuracy_map/'
-    stats_dir = '/clmnlab/GA/MVPA/LSS_betas_pb02/statistics/'
+    data_dir = '/clmnlab/GA/MVPA/LSS_pb02/data/'
+    behav_dir = '/clmnlab/GA/MVPA/LSS_pb02/behaviors/'
+    result_dir = '/clmnlab/GA/MVPA/LSS_pb02/accuracy_map/'
+    stats_dir = '/clmnlab/GA/MVPA/LSS_pb02/statistics/'
 
     subj_list = [
         'GA01', 'GA02', 'GA05', 'GA07', 'GA08', 'GA11', 'GA12', 'GA13', 'GA14', 'GA15', 'GA18', 'GA19',
@@ -38,7 +38,7 @@ if __name__ == '__main__':
         ]
         try:
             img_list = [
-                nilearn.image.index_img(img, list(range(1, 97)))
+                nilearn.image.index_img(standardize_session_wise(img), list(range(1, 97)))
                 for img in img_list
             ]
         except IndexError as e:

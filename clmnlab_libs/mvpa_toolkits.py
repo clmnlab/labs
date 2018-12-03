@@ -97,6 +97,18 @@ def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 
 
+def standardize_trial_wise(img):
+    img_data_means = np.mean(np.mean(np.mean(img.get_data(), axis=0), axis=0), axis=0)
+    img_data_stds = np.std(np.std(np.std(img.get_data(), axis=0), axis=0), axis=0)
+    return nilearn.image.new_img_like(img, (img.get_data()-img_data_means)/img_data_stds)
+
+
+def standardize_session_wise(img):
+    img_data_mean = np.mean(img.get_data())
+    img_data_std = np.std(img.get_data())
+    return nilearn.image.new_img_like(img, (img.get_data()-img_data_mean)/img_data_std)
+
+
 def get_full_mask(data_dir, fname='full_mask.group33.nii.gz'):
     mask_path = data_dir + fname
     mask_img = nilearn.image.load_img(mask_path)

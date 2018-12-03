@@ -88,4 +88,4 @@ if __name__ == '__main__':
 
         searchlight_img = run_searchlight(mask_img, X, y, group,
                                           group_k=3, radius=radius, estimator=estimator, chance_level=chance_level)
-        searchlight_img.to_filename(result_dir + '%s_r%d.nii.gz' % (subj, radius))
+        searchlight_img.to_filename(result_dir + '%s_r%d_%s.nii.gz' % (subj, radius, label))

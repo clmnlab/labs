@@ -93,6 +93,22 @@ def load_fmri_image(folder_name, subj, run_number, labels, standardize=True):
     return img
 
 
+def load_5d_fmri_image(fname):
+    img = nilearn.image.load_img(fname)
+    shape = img.shape
+
+    if len(shape) == 5 and shape[3] == 1:
+        reshape_img = nilearn.image.new_img_like(img, img.get_data().reshape([shape[0], shape[1], shape[2], shape[4]]))
+        assert np.sum(img.get_data()[:, :, :, 0, -1] - reshape_img.get_data()[:, :, :, -1]) == 0.0
+    elif len(shape) == 4:
+        print('WARNING: %s is not 5D image! This function will return the original one.' % fname)
+        reshape_img = img
+    else:
+        raise NotImplementedError('%s has an unknown shape %d.' % (fname, shape))
+
+    return reshape_img
+
+
 def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 

@@ -45,7 +45,7 @@ if __name__ == '__main__':
         print('starting run %s' % subj)
 
         if label == 'path':
-            # all 12 paths repeated
+            # all 12 paths is repeated
             labels = list(range(1, 13)) * 8
 
             # set chance level

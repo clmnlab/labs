@@ -45,7 +45,7 @@ if __name__ == '__main__':
         print('starting run %s' % subj)
 
         if label == 'path':
-            # all 12 paths is repeated
+            # all the 12 paths is repeated
             labels = list(range(1, 13)) * 8
 
             # set chance level
@@ -56,13 +56,13 @@ if __name__ == '__main__':
             with open(behav_dir + 'targetID.txt', 'r') as file:
                 labels = file.readlines()
 
-            # use only 2 ~ 97 lines - first line is dummy, all sessions has same order
+            # use only 2 ~ 97 lines - first line is dummy, all the sessions has same order
             labels = [int(l.strip()) for l in labels[1:97]]
 
             # set chance level
             chance_level = 1/4
 
-            # assertion error if all classes is not the same
+            # assertion error if all the classes is not the same
             assert set(Counter(labels).values()) == {24}
         else:
             raise ValueError('!! wrong label name')

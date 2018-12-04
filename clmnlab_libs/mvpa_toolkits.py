@@ -104,7 +104,7 @@ def load_5d_fmri_image(fname):
         print('WARNING: %s is not 5D image! This function will return the original one.' % fname)
         reshape_img = img
     else:
-        raise NotImplementedError('%s has an unknown shape %d.' % (fname, shape))
+        raise NotImplementedError('%s has an unknown shape %s.' % (fname, shape))
 
     return reshape_img
 

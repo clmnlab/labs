@@ -27,7 +27,7 @@ if __name__ == '__main__':
                                  + '  label=label name (pos or path)')
 
     # initialize variables
-    data_dir = '/clmnlab/GA/MVPA/TENT_pb02/data'
+    data_dir = '/clmnlab/GA/MVPA/TENT_pb02/data/'
     behav_dir = '/clmnlab/GA/MVPA/TENT_pb02/behaviors/'
     result_dir = '/clmnlab/GA/MVPA/TENT_pb02/accuracy_map/'
     stats_dir = '/clmnlab/GA/MVPA/TENT_pb02/statistics/'

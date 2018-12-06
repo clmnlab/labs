@@ -75,7 +75,7 @@ if __name__ == '__main__':
     else:
         raise ValueError('!! %s is unknown label name' % label)
 
-    mask_img = get_full_mask('/Volumes/clmnlab/GA/MVPA/fullmask_GAGB/', 'full_mask.GAGB01to19.nii.gz')
+    mask_img = get_full_mask('/clmnlab/GA/MVPA/fullmask_GAGB/', 'full_mask.GAGB01to19.nii.gz')
 
     for subj in subj_list:
         print('starting run %s' % subj)

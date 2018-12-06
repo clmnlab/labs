@@ -73,7 +73,11 @@ def get_behavior_data(folder_name, subj, run_number, label, stratified_group=Fal
     behav_df = behav_df[behav_df['run'] == run_number]
     
     labels = behav_df.loc[:, ['run', 'order', 'group']]
-    labels['task_type'] = behav_df['%s_type' % label]
+
+    if label == 'new_move':
+        labels['task_type'] = [1 if de < -15.0 else 3 if de > 15.0 else 2 for de in behav_df['degree_move']]
+    else:
+        labels['task_type'] = behav_df['%s_type' % label]
     
     if stratified_group is True:
         labels['group'] = _stratified_group(labels)

@@ -51,7 +51,6 @@ def run_searchlight(mask, X, y, group, radius=8, estimator='gnb'):
 
 
 def perform_analysis(label, mask, runs, radius=8, estimator='gnb'):
-
     # load behavioral data
     labels_list = [
         get_behavior_data(behavior_dir, subj, runs[0], label),

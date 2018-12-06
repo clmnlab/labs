@@ -113,6 +113,20 @@ def load_5d_fmri_image(fname):
     return reshape_img
 
 
+def average_N_in_4d_image(img, n=10):
+    shape = img.shape
+
+    assert len(shape) == 4
+    assert shape[-1] % n == 0
+
+    data = img.get_data()
+    data = np.mean(data.reshape((shape[0], shape[1], shape[2], shape[3] // n, n)), axis=4)
+
+    mean_img = nilearn.image.new_img_like(img, data)
+
+    return mean_img
+
+
 def masking_fmri_image(fmri_imgs, mask_img):
     return nilearn.masking.apply_mask(fmri_imgs, mask_img)
 

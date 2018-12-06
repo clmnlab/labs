@@ -160,7 +160,7 @@ def run_searchlight(full_mask, X, y, group, group_k=2, radius=8, estimator='svc'
         full_mask,
         radius=radius,
         estimator=estimator,
-        n_jobs=4,
+        n_jobs=1,
         verbose=False,
         cv=cv
     )

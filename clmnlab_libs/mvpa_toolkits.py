@@ -45,7 +45,7 @@ def load_rois(file_regex_str):
 
     for fname in fnames:
         masks.append(nilearn.image.load_img(fname))
-        label_name = fname.split('/')[-1].replace('nii.gz', '').replace('.nii', '')
+        label_name = fname.split('/')[-1].replace('.nii.gz', '').replace('.nii', '')
         labels.append(label_name)
 
     return labels, masks

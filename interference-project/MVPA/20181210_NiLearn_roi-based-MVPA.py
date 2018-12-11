@@ -36,7 +36,7 @@ def perform_analysis():
         ]
 
         imgs = [
-            mtk.masking_fmri_image([(subj, run)], mask)
+            mtk.masking_fmri_image(img_data[(subj, run)], mask)
             for run in runs
         ]
 

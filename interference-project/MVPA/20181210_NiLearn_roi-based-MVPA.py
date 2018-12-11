@@ -4,45 +4,51 @@ import numpy as np
 import random
 import sys
 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import GroupKFold, cross_val_score
 from sklearn.svm import LinearSVC
+
+
+def initial_images():
+    result = {}
+
+    for run in runs:
+        for subj in subj_list:
+            labels = mtk.get_behavior_data(behav_dir, subj, run, 'color')
+
+            # load and resampling image
+            img = mtk.load_5d_fmri_image(
+                data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run))
+            img = nilearn.image.index_img(img, labels['order'] - 1)
+            img = nilearn.image.resample_img(img, roi_masks[0].affine, roi_masks[0].shape, interpolation='nearest')
+
+            result[subj, run] = img
+
+    return result
 
 
 def perform_analysis():
     results = []
 
-    # in each subjects
     for subj in subj_list:
-        # load behavioral information
-        labels_list = [
-            mtk.get_behavior_data(behav_dir, subj, runs[0], label),
-            mtk.get_behavior_data(behav_dir, subj, runs[1], label)
+        labels = [
+            mtk.get_behavior_data(behav_dir, subj, run, label)
+            for run in runs
         ]
 
-        # load fMRI file
-        img_list = [
-            nilearn.image.resample_img(
-                nilearn.image.index_img(
-                    mtk.load_5d_fmri_image('%s/tvalsLSA.%s.r%02d.nii.gz' % (data_dir, subj, runs[0])),
-                    labels['order'] - 1
-                ),
-                mask.affine, mask.shape, interpolation='nearest'
-            )
-            for run, labels in zip(runs, labels_list)
+        imgs = [
+            mtk.masking_fmri_image([(subj, run)], mask)
+            for run in runs
         ]
 
-        # make X, y dataset & group info
-        data_xs = mtk.masking_fmri_image(nilearn.image.concat_imgs(img_list), mask)
-        data_ys = list(labels_list[0]['task_type']) + list(labels_list[1]['task_type'])
+        data_xs = np.concatenate(imgs)
+        data_ys = list(labels[0]['task_type']) + list(labels[1]['task_type'])
 
-        # grouped by run
-        group = [1 for _ in labels_list[0]['task_type']] + [2 for _ in labels_list[1]['task_type']]
+        group = [1 for _ in labels[0]['task_type']] + [2 for _ in labels[1]['task_type']]
         cv = GroupKFold(n_splits=2)
 
         cv_scores = cross_val_score(estimator, data_xs, data_ys, cv=cv, groups=group)
 
-        results.append(cv_scores)
+        results.append(list(cv_scores))
 
     return results
 
@@ -56,7 +62,6 @@ if __name__ == '__main__':
         raise ValueError('This code need a label in {move, plan, color}')
 
     estimator_name = 'svc'
-    radius = 8
 
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSA_tvals/data/'
@@ -73,22 +78,19 @@ if __name__ == '__main__':
         'IN43', 'IN45', 'IN46'
     ]
 
-    num_subj = len(subj_list)
-
     run_number_dict = {
         'move': [3, 5],
         'plan': [3, 4],
         'color': [3, 4],
     }
 
-    if estimator_name is 'svc':
-        estimator = LinearSVC()
-    elif estimator_name is 'lda':
-        estimator = LinearDiscriminantAnalysis(n_components=2)
+    estimator = LinearSVC()
+    roi_labels, roi_masks = mtk.load_rois(mask_dir + '*.nii.gz')
 
+    num_subj = len(subj_list)
     runs = run_number_dict[label]
 
-    roi_labels, roi_masks = mtk.load_rois(mask_dir + '*.nii.gz')
+    img_data = initial_images()
 
     prefix = '%s_%s' % (label, estimator_name)
 

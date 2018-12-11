@@ -74,9 +74,11 @@ if __name__ == '__main__':
         'GA01', 'GA02', 'GA05', 'GA07', 'GA08',
         'GA11', 'GA12', 'GA13', 'GA14', 'GA15',
         'GA18', 'GA19', 'GA20', 'GA21', 'GA23',
+        'GA26', 'GA27', 'GA28',
         'GB01', 'GB02', 'GB05', 'GB07', 'GB08',
         'GB11', 'GB12', 'GB13', 'GB14', 'GB15',
-        'GB18', 'GB19', 'GB20', 'GB21', 'GB23'
+        'GB18', 'GB19', 'GB20', 'GB21', 'GB23',
+        'GB26', 'GB27', 'GB28'
     ]
 
     num_subj = len(subj_list)

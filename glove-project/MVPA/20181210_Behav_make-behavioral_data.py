@@ -58,7 +58,8 @@ if __name__ == '__main__':
     subj_list = [
         'GA01', 'GA02', 'GA05', 'GA07', 'GA08',
         'GA11', 'GA12', 'GA13', 'GA14', 'GA15',
-        'GA18', 'GA19', 'GA20', 'GA21', 'GA23'
+        'GA18', 'GA19', 'GA20', 'GA21', 'GA23',
+        'GA26', 'GA27', 'GA28'
     ]
 
     behav_dir = '/Volumes/clmnlab/GA/behavior_data/'

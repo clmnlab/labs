@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
         imgs = [
             nilearn.image.index_img(
-                nilearn.image.load_img(data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run)),
+                mtk.load_5d_fmri_image(data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run)),
                 label['order'] - 1)
             for label, run in zip(labels, runs)
         ]

@@ -59,7 +59,7 @@ if __name__ == '__main__':
             for label, run in zip(labels, runs)
         ]
 
-        X = nilearn.image.concat_img(imgs)
+        X = nilearn.image.concat_imgs(imgs)
         y = list(labels[0]['task_type']) + list(labels[1]['task_type'])
         group = [1 for _ in labels[0]['task_type']] + [2 for _ in labels[1]['task_type']]
 

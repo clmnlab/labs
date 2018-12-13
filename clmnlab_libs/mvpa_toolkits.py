@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import random
 
+from clmnlab_libs.spatiotemporal_searchlight import SpatioTemporalSearchLight
 from sklearn.model_selection import GroupKFold, cross_val_score, LeaveOneOut, ShuffleSplit
 from sklearn.naive_bayes import GaussianNB
 
@@ -168,6 +169,20 @@ def run_searchlight(full_mask, X, y, group, group_k=2, radius=8, estimator='svc'
     searchlight.fit(X, y, group)
     scores = searchlight.scores_ - chance_level
     
+    return nilearn.image.new_img_like(full_mask, scores)
+
+
+def run_spatiotemporal_searchlight(full_mask, X, y, group, estimator, cv, radius=8, chance_level=0):
+    searchlight = SpatioTemporalSearchLight(
+        full_mask,
+        radius=radius,
+        estimator=estimator,
+        cv=cv
+    )
+
+    searchlight.fit(X, y, group)
+    scores = searchlight.scores_ - chance_level
+
     return nilearn.image.new_img_like(full_mask, scores)
 
 

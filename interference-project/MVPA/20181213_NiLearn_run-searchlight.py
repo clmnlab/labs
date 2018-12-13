@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
     # initialize variables
     data_dir = '/clmnlab/IN/MVPA/LSA_tvals/data/'
+    mask_dir = '/clmnlab/IN/MVPA/LSS_betas/data/'
     behav_dir = '/clmnlab/IN/MVPA/LSS_betas/behaviors/'
     result_dir = '/clmnlab/IN/MVPA/LSA_tvals/accuracy_map/'
     stats_dir = '/clmnlab/IN/MVPA/LSA_tvals/statistics/'
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     runs = run_number_dict[label]
 
     # load mask file
-    mask_img = mtk.get_full_mask(data_dir)
+    mask_img = mtk.get_full_mask(mask_dir)
 
     for subj in subj_list:
         print('starting run %s, %s label' % (subj, label))

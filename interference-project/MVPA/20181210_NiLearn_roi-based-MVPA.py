@@ -1,14 +1,17 @@
 import clmnlab_libs.mvpa_toolkits as mtk
 import nilearn.image
+import nilearn.masking
 import numpy as np
 import random
 import sys
 
 from sklearn.model_selection import GroupKFold, cross_val_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
 
-def initial_images():
+def initial_images(standardize_trial=False):
     result = {}
 
     for run in runs:
@@ -19,6 +22,12 @@ def initial_images():
             img = mtk.load_5d_fmri_image(
                 data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run))
             img = nilearn.image.index_img(img, labels['order'] - 1)
+
+            if standardize_trial:
+                temp = mtk.masking_fmri_image(img, mask_img)
+                temp = temp - np.tile(np.mean(temp, axis=1), (temp.shape[-1], 1)).T
+                img = nilearn.masking.unmask(temp, mask_img)
+
             img = nilearn.image.resample_img(img, roi_masks[0].affine, roi_masks[0].shape, interpolation='nearest')
 
             result[subj, run] = img
@@ -84,8 +93,14 @@ if __name__ == '__main__':
         'color': [3, 4],
     }
 
-    estimator = LinearSVC()
+    if estimator_name == 'svc':
+        estimator = LinearSVC()
+    elif estimator_name == 'scaled-svc':
+        estimator = Pipeline([('scale', StandardScaler()), ('svc', LinearSVC())])
+
     roi_labels, roi_masks = mtk.load_rois(mask_dir + '*.nii.gz')
+
+    mask_img = mtk.get_full_mask('/clmnlab/IN/MVPA/LSS_betas/data/')
 
     num_subj = len(subj_list)
     runs = run_number_dict[label]

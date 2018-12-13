@@ -53,8 +53,10 @@ if __name__ == '__main__':
         ]
 
         imgs = [
-            mtk.load_fmri_image(data_dir, subj, run, labels, standardize=False)
-            for run in runs
+            nilearn.image.index_img(
+                nilearn.image.load_img(data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run)),
+                label['order'] - 1)
+            for label, run in zip(labels, runs)
         ]
 
         X = nilearn.image.concat_img(imgs)

@@ -151,11 +151,12 @@ def get_full_mask(data_dir, fname='full_mask.group33.nii.gz'):
     return mask_img
 
 
-def run_searchlight(full_mask, X, y, group, group_k=2, radius=8, estimator='svc', chance_level=0):
+def run_searchlight(full_mask, X, y, group=None, group_k=2, radius=8, estimator='svc', cv=None, chance_level=0):
     if estimator is 'gnb':
         estimator = GaussianNB()
         
-    cv = GroupKFold(n_splits=group_k)
+    if cv is None:
+        cv = GroupKFold(n_splits=group_k)
         
     searchlight = nilearn.decoding.SearchLight(
         full_mask,

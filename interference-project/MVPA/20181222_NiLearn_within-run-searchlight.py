@@ -52,7 +52,7 @@ if __name__ == '__main__':
         X = img
         y = list(label['task_type'])
         
-        searchlight_img = run_searchlight(mask_img, X, y, 
+        searchlight_img = mtk.run_searchlight(mask_img, X, y, 
                                           estimator=estimator_name, cv=mtk.BalancedShuffleSplit(), chance_level=1/3)
         searchlight_img.to_filename(
             result_dir + '%s/%s_%s_r%d_%s_run%d.nii.gz' % (label, subj, label, radius, estimator_name, run))

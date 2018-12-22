@@ -13,7 +13,7 @@ if __name__ == '__main__':
         raise ValueError('This code need a first label in {move, plan, color}')
         
     if len(sys.argv) >= 3 and sys.argv[2] in {'3', '4', '5'}:
-        run = int(sys.argv[1])
+        run = int(sys.argv[2])
     else:
         raise ValueError('This code need a second label in {3, 4, 5}')
 

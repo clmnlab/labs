@@ -64,6 +64,6 @@ if __name__ == '__main__':
         group = [1 for _ in labels[0]['task_type']] + [2 for _ in labels[1]['task_type']]
 
         searchlight_img = mtk.run_searchlight(mask_img, X, y, group, group_k=2,
-                                              estimator=estimator_name, chance_level=1/3)
+                                              estimator=estimator_name, radius=radius, chance_level=1/3)
         searchlight_img.to_filename(
             result_dir + '%s/%s_%s_r%d_%s.nii.gz' % (label, subj, label, radius, estimator_name))

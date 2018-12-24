@@ -44,15 +44,15 @@ if __name__ == '__main__':
     for subj in subj_list:
         print('starting run %s, %s label' % (subj, label))
 
-        label = mtk.get_behavior_data(behav_dir, subj, run, label)
+        labels = mtk.get_behavior_data(behav_dir, subj, run, label)
         img = nilearn.image.index_img(
                 mtk.load_5d_fmri_image(data_dir + 'tvalsLSA.%s.r0%d.nii.gz' % (subj, run)),
-                label['order'] - 1)
+                labels['order'] - 1)
 
         X = img
-        y = list(label['task_type'])
+        y = list(labels['task_type'])
         
-        searchlight_img = mtk.run_searchlight(mask_img, X, y, 
-                                          estimator=estimator_name, cv=mtk.BalancedShuffleSplit(), chance_level=1/3)
+        searchlight_img = mtk.run_searchlight(mask_img, X, y, estimator=estimator_name,
+                                              cv=mtk.BalancedShuffleSplit(), chance_level=1/3)
         searchlight_img.to_filename(
             result_dir + '%s/%s_%s_r%d_%s_run%d.nii.gz' % (label, subj, label, radius, estimator_name, run))

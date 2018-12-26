@@ -65,7 +65,7 @@ if __name__ == '__main__':
         for argv in sys.argv[1:]:
             try:
                 opt, value = argv.split('=')
-                if opt == 'label' and value in {'pos', 'path', 'real-pos'}:
+                if opt == 'label' and value in {'pos', 'path', 'real-pos', 'real-pos-8class'}:
                     label = value
                 else:
                     raise ValueError

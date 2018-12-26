@@ -41,6 +41,15 @@ def get_label_list_and_chance_level():
 
         return lines, 1 / 4
 
+    elif label == 'real-pos-8class':
+        # read behav files
+        label_df = pd.read_csv(behav_dir + '%s_compact_8class.tsv' % subj, delimiter='\t')
+
+        # indexing by runs
+        lines = list(label_df['class'].astype(int))[(run-1)*97+1:run*97]
+
+        return lines, 1 / 8
+
     else:
         raise ValueError('!! %s is unknown label name' % label)
 

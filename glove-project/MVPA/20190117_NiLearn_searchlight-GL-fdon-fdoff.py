@@ -47,7 +47,7 @@ if __name__ == '__main__':
     estimator = LinearDiscriminantAnalysis()
 
     # target, index, run info initialize (in feedback condition)
-    info_df = pd.read_csv('/Volumes/clmnlab/GL/fmri_data/MVPA/behaviors/targetID_fb_GL.tsv', delimiter='\t')
+    info_df = pd.read_csv('/clmnlab/GL/fmri_data/MVPA/behaviors/targetID_fb_GL.tsv', delimiter='\t')
     chance_level = 1 / 4
 
     info_df = info_df[info_df.run.isin(runs) & (info_df.feedback == feedback_on)]

@@ -68,7 +68,7 @@ if __name__ == '__main__':
             assert img.shape == (96, 114, 96, 145)
 
         # indexing image
-        imgs = nilearn.image.concat_img(img_list)
+        imgs = nilearn.image.concat_imgs(img_list)
         imgs = nilearn.image.index_img(imgs, indexes)
 
         # run searchlight - leave one group out (across run)

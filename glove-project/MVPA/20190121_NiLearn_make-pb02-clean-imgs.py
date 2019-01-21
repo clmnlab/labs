@@ -41,10 +41,10 @@ if __name__ == '__main__':
     runs = [1, 2, 3, 4]
 
     # feedback on: (True * 2 TRs * 12 trials + False * 2 TRs * 12 trials) * 6 blocks / in each image file
-    feedback_on_indexes = np.arange(288*4)[([True] * 24 + [False] * 24) * 6]
+    feedback_on_indexes = np.arange(288)[([True] * 24 + [False] * 24) * 6]
 
     # feedback off: (False * 2 TRs * 12 trials + True * 2 TRs * 12 trials) * 6 blocks / in each image file
-    feedback_off_indexes = np.arange(288*4)[([False] * 24 + [True] * 24) * 6]
+    feedback_off_indexes = np.arange(288)[([False] * 24 + [True] * 24) * 6]
 
     full_mask = nilearn.image.load_img('/clmnlab/GL/fmri_data/masks/full_mask.group.nii.gz')
 

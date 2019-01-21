@@ -51,12 +51,12 @@ if __name__ == '__main__':
     for subj in subj_list:
         for run in runs:
             # run 1 -> r02, run 2 -> r03, ... in preprocessed files
-            img = load_pb02_image(raw_dir + '%s/preprocessed/pb02.%s.r%02d.volreg.nii.gz' % (subj, run+1, subj),
+            img = load_pb02_image(raw_dir + '%s/preprocessed/pb02.%s.r%02d.volreg.nii.gz' % (subj, subj, run+1),
                                   full_mask, feedback_on_indexes)
             img.to_filename(output_dir + '%s_r%02d_fdon.nii.gz' % (subj, run))
 
             # run 1 -> r02, run 2 -> r03, ... in preprocessed files
-            img = load_pb02_image(raw_dir + '%s/preprocessed/pb02.%s.r%02d.volreg.nii.gz' % (subj, run+1, subj),
+            img = load_pb02_image(raw_dir + '%s/preprocessed/pb02.%s.r%02d.volreg.nii.gz' % (subj, subj, run+1),
                                   full_mask, feedback_off_indexes)
             img.to_filename(output_dir + '%s_r%02d_fdoff.nii.gz' % (subj, run))
 

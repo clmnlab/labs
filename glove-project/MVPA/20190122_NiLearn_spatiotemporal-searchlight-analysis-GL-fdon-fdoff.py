@@ -59,8 +59,7 @@ if __name__ == '__main__':
         imgs = gtk.spatiotemporal_img_reshape(imgs, 288, 2)
 
         # check image size
-        for img in img_list:
-            assert img.shape == (96, 114, 96, 288, 2)
+        assert imgs.shape == (96, 114, 96, 288, 2)
 
         # run spatio-temporal searchlight - leave one group out (across run)
         searchlight_img = mtk.run_spatiotemporal_searchlight(

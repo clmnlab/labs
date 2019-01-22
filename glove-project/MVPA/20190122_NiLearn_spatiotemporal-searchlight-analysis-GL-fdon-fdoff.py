@@ -52,15 +52,15 @@ if __name__ == '__main__':
         img_list = [nilearn.image.load_img(
             data_dir + '%s_r%02d_fd%s.nii.gz' % (subj, run, 'on' if feedback_on else 'off')) for run in runs]
 
+        # indexing doesn't need, just concatenating
+        imgs = nilearn.image.concat_imgs(img_list)
+
         # reshaping
-        img_list = [gtk.spatiotemporal_img_reshape(img, 72, 2) for img in img_list]
+        imgs = gtk.spatiotemporal_img_reshape(imgs, 288, 2)
 
         # check image size
         for img in img_list:
-            assert img.shape == (96, 114, 96, 72, 2)
-
-        # indexing doesn't need, just concatenating
-        imgs = nilearn.image.concat_imgs(img_list)
+            assert img.shape == (96, 114, 96, 288, 2)
 
         # run spatio-temporal searchlight - leave one group out (across run)
         searchlight_img = mtk.run_spatiotemporal_searchlight(

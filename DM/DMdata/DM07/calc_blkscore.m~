@@ -1,0 +1,9 @@
+function blk_score = calc_blkscore(subj)
+perf = calc_memscore(subj);
+perf = convert_score(perf);
+N =[88 84 92];
+valid = [9:N(1) N(1)+5:N(1)+N(2) N(1)+N(2)+5:sum(N)-8];
+lr = perf.study.lr(valid);
+lrc = perf.study.lrc(valid);
+lrcc = perf.study.lrcc(valid);
+for i=1:length(valid)/8 blk_lr(i) = mean(lr(8*(I

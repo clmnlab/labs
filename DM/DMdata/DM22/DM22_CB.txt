@@ -1,0 +1,3 @@
+GROUP	ColorIDX
+1	6GROUP	ColorIDX
+1	6

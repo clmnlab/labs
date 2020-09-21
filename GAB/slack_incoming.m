@@ -1,4 +1,5 @@
 function response = slack_incoming(url, varargin)
+%  from https://gist.github.com/gkhtnk/71e0570705944ff04adb6729822798a1
 %% response = slack_incoming(url, payload)
 % url      : [char]  Webhook URL (you have to get Webhook URL from Slack)
 % payload  : [char, struct]  payload must be JSON style string or struct
@@ -9,6 +10,10 @@ function response = slack_incoming(url, varargin)
 %            otherwise   failed to POST
 % 
 % see also Slack Incoming Webhooks <https://api.slack.com/incoming-webhooks>
+
+
+
+
 
 % The MIT License (MIT)
 % 
@@ -31,6 +36,7 @@ function response = slack_incoming(url, varargin)
 % LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 % SOFTWARE.
+
 
 % 1. Get Webhook URL from https://slack.com/services/new/incoming-webhook.
 % 2. you can get URL like https://hooks.slack.com/services/TXXXXX/BXXXXX/XXXXXXXXXX

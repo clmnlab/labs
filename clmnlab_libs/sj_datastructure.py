@@ -1,3 +1,11 @@
+
+# Common Libraries
+import copy
+
+# Custom Libraries
+
+# Sources
+
 # 정렬관련 #############################################################################################
 # 퀵 정렬
 def quick_sort(itr, cmp):
@@ -213,7 +221,6 @@ def append_unique_checked_column(df, col_names):
     # 특정된 column의 unique한 값을 뽑아내야함(반복)
     # unique한 값이 row에 들어있는지 판단후 있으면 True, 없으면 False로 데이터를 생성
     # 생성된 column을 dataframe에 집어넣는다.
-    import copy
     cp_df = copy.deepcopy(df)
     for sp_col in col_names:
         try:
@@ -233,7 +240,7 @@ def checked_column_inequalities(df, col_names, inequalities):
     # 부등식의 개수만큼 반복
     # 특정한 column의 값이 부등식에 속하는지 판단 속하면 True, 안속하면 False로 데이터 생성
     # 생성된 column을 dataframe에 집어넣는다.
-    import copy
+    
     cp_df = copy.deepcopy(df)
     for sp_col in col_names:
         try:
@@ -249,7 +256,6 @@ def checked_column_inequalities(df, col_names, inequalities):
 
 # 특정한 데이터가 dataframe의 row에 얼마나 존재하는 지를 체크해주는 함수(dataframe의 첫번째 컬럼 대상)
 def check_frequent_df(df, split_c, sp_datas):
-    import copy
     c_df = copy.deepcopy(df)
 
     for sp_d in sp_datas:

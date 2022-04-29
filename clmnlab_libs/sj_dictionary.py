@@ -1,9 +1,20 @@
 
+# Cummon Libraries
 from operator import itemgetter
-
 import copy
 
+# Custom Libraries
+
+# Sources
+
 def init_dic(keys, initial_value):
+    """
+    Initialize dictionary in accordance with keys
+    
+    :param keys: dictionary keys
+    :param initial_value: initial value to the key
+    """
+    
     dic = {}
     for key in keys:
         dic[key] = copy.copy(initial_value)
@@ -13,6 +24,7 @@ def init_dic(keys, initial_value):
 def find_valueInDict(info, search_value):
     """
     find value in dictionray
+    
     :param info: (dictionary)
 
     return: key of dict corresponding the value

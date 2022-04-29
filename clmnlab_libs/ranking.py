@@ -2,10 +2,13 @@
 """
 Created on Wed Nov  6 20:23:39 2019
 
-@author: STU24
+@author: seojin
 """
 
+# Common Libraries
 import pandas as pd
+
+# Sources
 
 def top_ranking_df(df, column_name, rank_range):
     sorted_df = df.sort_values(by=column_name, ascending = False)

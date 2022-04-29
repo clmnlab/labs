@@ -1,13 +1,13 @@
 
+# Common Libraries
 import psychopy
 from threading import Timer
 import queue
-from Module.sj_file_system import CsvManager
-
 import time
 from psychopy import core
 
-
+# Custom Libraries
+from sj_file_system import CsvManager
 
 """
 Note: 
@@ -30,6 +30,8 @@ when a object's position is (0,0) then psychopy match the object's anchor and ps
 if the anchor is left(left boundar), the anchor point is matched to center position
 so, the left side point of box's position is 0
 """
+
+# Sources
 
 class Direct_fire_timer:
     """

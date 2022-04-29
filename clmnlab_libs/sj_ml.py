@@ -5,17 +5,21 @@ Created on Wed Jul  8 11:04:18 2020
 @author: seojin
 """
 
+# Common Libraries
 import numpy as np
-from Module import sj_higher_function
-from Module import sj_file_system
-from Module.sj_file_system import str_join
 import time
 from tensorboardX import SummaryWriter
 from sklearn.utils import shuffle
 import torch
 import pandas as pd
 import os
-import time
+
+# Custom Libraries
+import sj_higher_function
+import sj_file_system
+from sj_file_system import str_join
+
+# Sources
 
 def numerical_gradient(f, x):
     """

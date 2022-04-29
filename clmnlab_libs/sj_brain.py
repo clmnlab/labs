@@ -1,8 +1,27 @@
 
+# Common Libraries
 import os
 import numpy as np
 import pandas as pd
+import copy
+import datetime
 
+# Preprocessing
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn.model_selection import LeaveOneGroupOut, GroupKFold
+from scipy.stats import zscore
+
+# RSAtoolbox
+import rsatoolbox
+from rsatoolbox.inference import eval_fixed
+from rsatoolbox.model import ModelFixed
+from rsatoolbox.util.searchlight import get_volume_searchlight, get_searchlight_RDMs, evaluate_models_searchlight
+
+# Visualize
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.pyplot as plt
+
+# Brain
 import nilearn
 import nibabel as nb
 from nilearn import image
@@ -10,23 +29,16 @@ from nilearn.plotting import plot_roi, plot_design_matrix
 from nilearn.image import resample_to_img, math_img
 import nltools
 from nltools.data import Brain_Data
-import copy
+
+# Custom Libraries
+import sj_util
+import sj_sequence
+import sj_file_system
+import sj_higher_function
 import sj_preprocessing
 import sj_file_system
 
-import matplotlib.pyplot as plt
-import datetime
-
-import rsatoolbox
-from rsatoolbox.inference import eval_fixed
-from rsatoolbox.model import ModelFixed
-from rsatoolbox.util.searchlight import get_volume_searchlight, get_searchlight_RDMs, evaluate_models_searchlight
-
-from Module import sj_util, sj_sequence, sj_file_system, sj_higher_function
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-from sklearn.model_selection import LeaveOneGroupOut, GroupKFold
-from scipy.stats import zscore
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+# Sources
 
 def load_behaviors(behavior_paths):
     """
@@ -356,7 +368,7 @@ def mean_img(imgs, threshold=None):
 
 def add_imgs(imgs, is_use_path = False):
     """
-    add many image from imgs
+    Add many image from imgs
 
     :param imgs: imgs(nitfti image array)
 
@@ -467,14 +479,14 @@ def mean_img_within_diff_with_targetIndex(fMRI_data, lower_diff, upper_diff, tar
     return image.concat_imgs(mean_datas)
 
 def upper_tri(RDM):
-    """upper_tri returns the upper triangular index of an RDM
-    
-    Args:
-        RDM 2Darray: squareform RDM(numpy array)
-    
-    Returns:
-        1D array: upper triangular vector of the RDM
     """
+    upper_tri returns the upper triangular index of an RDM
+    
+    :param RDM: squareform RDM(numpy array)
+    
+    return upper triangular vector of the RDM(1D array) 
+    """
+    
     # returns the upper triangle
     m = RDM.shape[0]
     r, c = np.triu_indices(m, 1)
@@ -487,7 +499,8 @@ def total_RDM_dissimilarity(RDM):
     :param RDM: RDM(numpy 2d array)
     
     return: scalar value
-    """   
+    """
+    
     # The reason excluding zeron is to exclude non-calculated area(ex: external area of mask)
     up_RDM = upper_tri(RDM)
     return np.mean(up_RDM[up_RDM != 0])
@@ -525,6 +538,7 @@ def searchlight_RDM(betas,
     :param save_region_path: if save_rdm_path is not none, save region data
     :param save_rdm_path: if save_rdm_path is not none, save rdm data
     :param radius: searchlight radius
+    :param threshold: threshold(float)
     :param method: distance method
     
     return RDMs(rsatoolbox)
@@ -606,59 +620,6 @@ def searchlight_RDM(betas,
         sj_file_system.save(SL_RDM, save_rdm_path)
         
     return SL_RDM
-
-class RDM_model:
-    """
-    This class's purpose is managing RDM model
-    """
-    
-    def __init__(self, model_2d_array, model_name, conditions):
-        """
-        :param model_2d_array: model(2d numpy array)
-        :param model_name: model name(str)
-        :param conditions: conditions(list of string)
-        """
-        self.model = model_2d_array
-        self.name = model_name
-        self.conditions = conditions
-        
-    def draw(self, fig = None, axis = None, cmap="rainbow", v_range = (0, 1)):
-        if fig is None and axis is None:
-            fig, axis = plt.subplots(1,1)
-        
-        RDM_model.draw_rdm(rdm=self.model, 
-                           conditions=self.conditions, 
-                           fig = fig,
-                           title=self.name, 
-                           cmap=cmap,
-                           axis = axis,
-                           v_range = v_range)
-    
-    # Utility function
-    @staticmethod
-    def draw_rdm(rdm, 
-                 conditions, 
-                 fig,
-                 axis,
-                 title="", 
-                 cmap="rainbow",
-                 v_range = (0, 1)):
-        """
-        :param rdm: numpy 2d array
-        :param conditions: list of condition
-        :param y_range: (y_min, y_max)
-        :param axis: axis
-        :param v_range: color ranging ex) (0, 1)
-        """
-        ticks_range = np.arange(0, len(conditions))
-        
-        divider = make_axes_locatable(axis)
-        cax = divider.append_axes('right', size='5%', pad=0.05)
-        im = axis.imshow(rdm, cmap="rainbow", vmin = v_range[0], vmax = v_range[1])
-        fig.colorbar(im, cax=cax, orientation='vertical')
-        axis.set_xticks(ticks_range, conditions, rotation = 90)
-        axis.set_yticks(ticks_range, conditions)
-        axis.set_title(title)
                   
 def RSA(models, 
         mask,
@@ -688,9 +649,13 @@ def RSA(models,
         
     :param models: RDM Model list, made by RDM_model
     :param mask: must be binary data
-    :param reference_brain_shape: nx, ny, nz(tuples)
+    :param save_rdm_path: (string) if save_rdm_path is not none, save rdm data
+    :param save_corr_brain_path: (string) correlation brain with model
     :param datas: nifti array or nltools Brain data
     :param conditions: data conditions(1d list)
+    :param region_path: (string) if region_path is not none, save region data
+    :param radius: searchlight radius
+    :param threshold: threshold(float)
     :param rdm_distance_method: distance method
     
     return: RDM_brains
@@ -763,6 +728,59 @@ def RSA(models,
             
     return result
 
+class RDM_model:
+    """
+    This class's purpose is managing RDM model
+    """
+    
+    def __init__(self, model_2d_array, model_name, conditions):
+        """
+        :param model_2d_array: model(2d numpy array)
+        :param model_name: model name(str)
+        :param conditions: conditions(list of string)
+        """
+        self.model = model_2d_array
+        self.name = model_name
+        self.conditions = conditions
+        
+    def draw(self, fig = None, axis = None, cmap="rainbow", v_range = (0, 1)):
+        if fig is None and axis is None:
+            fig, axis = plt.subplots(1,1)
+        
+        RDM_model.draw_rdm(rdm=self.model, 
+                           conditions=self.conditions, 
+                           fig = fig,
+                           title=self.name, 
+                           cmap=cmap,
+                           axis = axis,
+                           v_range = v_range)
+    
+    # Utility function
+    @staticmethod
+    def draw_rdm(rdm, 
+                 conditions, 
+                 fig,
+                 axis,
+                 title="", 
+                 cmap="rainbow",
+                 v_range = (0, 1)):
+        """
+        :param rdm: numpy 2d array
+        :param conditions: list of condition
+        :param y_range: (y_min, y_max)
+        :param axis: axis
+        :param v_range: color ranging ex) (0, 1)
+        """
+        ticks_range = np.arange(0, len(conditions))
+        
+        divider = make_axes_locatable(axis)
+        cax = divider.append_axes('right', size='5%', pad=0.05)
+        im = axis.imshow(rdm, cmap="rainbow", vmin = v_range[0], vmax = v_range[1])
+        fig.colorbar(im, cax=cax, orientation='vertical')
+        axis.set_xticks(ticks_range, conditions, rotation = 90)
+        axis.set_yticks(ticks_range, conditions)
+        axis.set_title(title)
+        
 def make_RDM_brain(brain_shape, RDMs, conditions, is_return_1d=False):
     """
     Make RDM brain (nx, ny, nz, n_condition x n_condition)
@@ -806,6 +824,7 @@ def brain_total_dissimilarity(rdm_brain):
     Get total dissimilarity from rdm_brain
     
     :param rdm_brain: 5d array(array) made by make_RDM_brain function
+    
     return np.array(nx, ny, nz)
     """
     nx, ny, nz = rdm_brain.shape[0], rdm_brain.shape[1], rdm_brain.shape[2]
@@ -857,6 +876,7 @@ def make_roi(roi_paths, reference_img):
     """
     roi = add_imgs(roi_paths)
     roi = image.resample_to_img(roi, reference_img, interpolation="nearest")
+    
     return roi
         
 class fan_roi_mask_manager:
@@ -1272,7 +1292,7 @@ def searchlight_with_beta(Xs,
                           estimator = "svc",
                           prefix = ""):
     """
-    Do searchlight analysis using beta values
+    Do searchlight Decoding analysis using beta values
     
     :param Xs: list of nifti image(list) seperated by run, shape (n_x, n_y, n_z, n_conditions)
     :param Ys: list of label(list) seperated by run ex) [ [condition1, condition1, condition2, condition2], [condition1, condition1, condition2, condition2] ]
@@ -1308,6 +1328,8 @@ def searchlight_with_beta(Xs,
     if estimator == "LDA":
         from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
         estimator_clf = LinearDiscriminantAnalysis()
+    else:
+        estimator_clf = estimator
         
     # Make Model
     searchlight = nilearn.decoding.SearchLight(
@@ -1325,8 +1347,8 @@ def searchlight_with_beta(Xs,
     end = datetime.datetime.now()
     
     # Save
-    save_file_name = sj_file_system.str_join([prefix, subj_name, estimator, "searchlight_beta"], deliminator = "_")
-    np.save(os.path.join(searchlight_dir_path, save_file_name), searchlight.scores_)
+    save_file_name = sj_file_system.str_join([prefix, subj_name, estimator, "searchlight_clf"], deliminator = "_")   
+    sj_file_system.save(searchlight, save_file_name)
     
     score_img = image.new_img_like(ref_niimg = full_mask, data = searchlight.scores_)
     nb.save(score_img, os.path.join(searchlight_dir_path, save_file_name + ".nii"))
@@ -1550,6 +1572,14 @@ if __name__ == "__main__":
                                   mask_path = os.path.join(mask_dir_path, "parcellation", "Neurosynth_parcellation_k50_2mm.nii.gz"), 
                                   reference_img= full_mask)
     
-    imageCoord2anatCoord([0,0,0], full_mask.affine)
-    anatCoord2imageCoord([0,0,0], full_mask.affine)
+    image2referenceCoord([0,0,0], full_mask.affine)
+    reference2imageCoord([0,0,0], full_mask.affine)
     
+    rdm = np.array(
+        [
+            [0,2,3],
+            [4,0,6],
+            [7,8,0],
+        ]
+    )
+    sort_rdm(rdm, ["A", "B", "C"], ["B", "A", "C"])

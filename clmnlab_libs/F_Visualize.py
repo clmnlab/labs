@@ -2,20 +2,23 @@
 """
 Created on Tue Oct 29 19:12:48 2019
 
-@author: seojin
+@author: STU24
 """
 
 # Visualize 관련
 
+# Common Libraries
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import scipy
-
 from enum import Enum
 from Module import sj_string, sj_file_system
 
+# Custom Libraries
+
+# Sources
 
 class Visualizing(Enum):
     scatter = 1 << 0

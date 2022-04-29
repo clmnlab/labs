@@ -1,9 +1,15 @@
 
+
+# Common Libraries
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import sys
 import time
+
+# Custom Libraries
+
+# Sources
 
 class Watcom(QLabel):
     def __init__(self,

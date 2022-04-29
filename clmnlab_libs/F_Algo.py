@@ -5,6 +5,14 @@ Created on Tue Oct 29 19:12:07 2019
 @author: seojin
 """
 
+# Common Libraries
+import pandas as pd
+import numpy as np
+
+# Custom Libraries
+
+# Sources
+
 class DF_Helper:
     # 매개변수에 dictionary 형식으로 제한조건을 넣어주면 해당 조건에 맞는 row를 리턴해줌
     # dictionary의 key 값은 column 이름이 와야 하며 value는 해당 column에 속하는 값이 와야함
@@ -15,7 +23,7 @@ class DF_Helper:
         # value는 특정 데이터
         
         # constraints 전부를 순회하며 조건에 만족되는 row만 추출
-        import pandas as pd
+        
         r_df = pd.DataFrame(columns = df.columns)
         
         for i in df.index:
@@ -44,7 +52,7 @@ class DF_Helper:
     @staticmethod
     def group(df, col_names, agg_fun):
         # jong_ro_total_period = jong_ro.groupby([jong_ro['AMD_NM'], jong_ro['AMD_CD']]).aggregate(sum).drop('SGG_NM', axis = 1)['total']
-        import numpy as np
+        
         
         group_key = [df[col_name] for col_name in col_names]
         group = df.groupby(group_key).aggregate(agg_fun)

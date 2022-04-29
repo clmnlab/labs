@@ -6,9 +6,14 @@ Created on Sun Nov 15 16:15:22 2020
 @author: yoonseojin
 """
 
+# Common Libaries
 import numpy as np 
 from scipy import stats
-from Module import sj_higher_function
+
+# Custom Libraries
+import sj_higher_function
+
+# Sources
 
 """
 LSE

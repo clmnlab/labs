@@ -2,14 +2,19 @@
 """
 Created on Wed Jul  8 10:36:40 2020
 
-@author: frontis
+@author: seojin
 """
 
+# Common
 import numpy as np
 import cv2
 import random
-from Module import sj_sequence
 import pandas as pd
+
+# Custom
+import sj_sequence
+
+# Sources
 
 def shift_2dmask(mask, direction, constant):
     p_mask = np.pad(mask, (1,1), mode = 'constant', constant_values= constant)

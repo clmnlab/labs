@@ -1,4 +1,7 @@
+# Common Libraries
 import time
+
+# Sources
 
 def time_decorator(name):
     def callf(func):

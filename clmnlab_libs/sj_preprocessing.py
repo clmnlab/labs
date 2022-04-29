@@ -1,9 +1,14 @@
 
+# Common Libraries
 from enum import Enum
-from Module import sj_higher_function
-from Module.sj_higher_function import flatten
 import numpy as np
 import pandas as pd
+
+# Custom Libraries
+import sj_higher_function
+from sj_higher_function import flatten
+
+# Sources
 
 class Aggregate(Enum):
     mean = 1 << 0

@@ -1,6 +1,11 @@
 
-from Module import sj_sequence
+# Common Libraries
 import numpy as np
+
+# Custom Libraries
+import sj_sequence
+
+# Sources
 
 def search_string(target, search_keys, search_type = "any", exclude_keys = []):
     """

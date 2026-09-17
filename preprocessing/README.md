@@ -1,4 +1,4 @@
-# PHD fMRIPrep pipeline
+# fMRIPrep pipeline
 
 This pipeline uses the original 3T sagittal MPRAGE for anatomical processing and
 FreeSurfer, and the 7T AP/PA acquisitions for resting-state fMRI preprocessing.
